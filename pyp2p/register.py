@@ -37,9 +37,10 @@ class RegisterBot(sleekxmpp.ClientXMPP):
           workflows will need to check for data forms, etc.
     """
 
-    def __init__(self, jid, password):
+    def __init__(self, logger, jid, password):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
 
+        self.logger = logger
         # The session_start event will be triggered when
         # the bot establishes its connection with the server
         # and the XML streams are ready for use. We want to
@@ -100,13 +101,12 @@ class RegisterBot(sleekxmpp.ClientXMPP):
 
         try:
             resp.send(now=True)
-            logging.info("Account created for %s!" % self.boundjid)
+            self.logger.info("Account created for %s!" % self.boundjid)
         except IqError as e:
-            logging.error(e)
-            logging.error("Could not register account: %s" % e.iq['error']['text'])
+            self.logger.error("Could not register account: %s" % e.iq['error']['text'])
             self.disconnect()
         except IqTimeout:
-            logging.error("No response from server.")
+            self.logger.error("No response from server.")
             self.disconnect()
 
 
@@ -119,13 +119,14 @@ class Register():
 
     def register(self, jid, password):
         # Setup logging.
-        logging.basicConfig(level=logging.DEBUG,
-                        format='%(levelname)-8s %(message)s')
+        logging.basicConfig(level=logging.DEBUG)
+
+        logger = logging.getLogger("register")
 
         # Setup the RegisterBot and register plugins. Note that while plugins may
         # have interdependencies, the order in which you register them does
         # not matter.
-        xmpp = RegisterBot(jid, password)
+        xmpp = RegisterBot(logger, jid, password)
         xmpp.register_plugin('xep_0030') # Service Discovery
         xmpp.register_plugin('xep_0004') # Data forms
         xmpp.register_plugin('xep_0066') # Out-of-band Data
@@ -143,7 +144,7 @@ class Register():
         # xmpp.ca_certs = "path/to/ca/cert"
 
         # Connect to the XMPP server and start processing XMPP stanzas.
-        logging.info("Connecting...")
+        logger.info("Connecting...")
         if xmpp.connect((self.server_address, self.port)):
             # If you do not have the dnspython library installed, you will need
             # to manually specify the name of the server if it does not match
@@ -152,9 +153,9 @@ class Register():
             #
             # if xmpp.connect(('talk.google.com', 5222)):
             #     ...
-            logging.info("Processing...")
+            logger.info("Processing...")
             xmpp.process(block=True)
-            logging.info("Processing finished.")
+            logger.info("Processing finished.")
             return True
         else:
             return False
