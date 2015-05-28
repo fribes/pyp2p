@@ -79,20 +79,6 @@ class RegisterBot(sleekxmpp.ClientXMPP):
     def register(self, iq):
         """
         Fill out and submit a registration form.
-
-        The form may be composed of basic registration fields, a data form,
-        an out-of-band link, or any combination thereof. Data forms and OOB
-        links can be checked for as so:
-
-        if iq.match('iq/register/form'):
-            # do stuff with data form
-            # iq['register']['form']['fields']
-        if iq.match('iq/register/oob'):
-            # do stuff with OOB URL
-            # iq['register']['oob']['url']
-
-        To get the list of basic registration fields, you can use:
-            iq['register']['fields']
         """
         resp = self.Iq()
         resp['type'] = 'set'
@@ -109,13 +95,11 @@ class RegisterBot(sleekxmpp.ClientXMPP):
             self.logger.error("No response from server.")
             self.disconnect()
 
-
 class Register():
 
     def __init__(self, server_address, port):
         self.server_address = server_address
         self.port = port
-
 
     def register(self, jid, password):
         # Setup logging.
@@ -134,13 +118,6 @@ class Register():
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
         if xmpp.connect((self.server_address, self.port)):
-            # If you do not have the dnspython library installed, you will need
-            # to manually specify the name of the server if it does not match
-            # the one in the JID. For example, to use Google Talk you would
-            # need to use:
-            #
-            # if xmpp.connect(('talk.google.com', 5222)):
-            #     ...
             logger.info("Processing...")
             xmpp.process(block=True)
             logger.info("Processing finished.")
