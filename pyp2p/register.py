@@ -102,8 +102,8 @@ class RegisterBot(sleekxmpp.ClientXMPP):
             resp.send(now=True)
             logging.info("Account created for %s!" % self.boundjid)
         except IqError as e:
-            logging.error("Could not register account: %s" %
-                    e.iq['error']['text'])
+            logging.error(e)
+            logging.error("Could not register account: %s" % e.iq['error']['text'])
             self.disconnect()
         except IqTimeout:
             logging.error("No response from server.")
@@ -115,7 +115,6 @@ class Register():
     def __init__(self, server_address, port):
         self.server_address = server_address
         self.port = port
-
 
 
     def register(self, jid, password):
@@ -144,6 +143,7 @@ class Register():
         # xmpp.ca_certs = "path/to/ca/cert"
 
         # Connect to the XMPP server and start processing XMPP stanzas.
+        logging.info("Connecting...")
         if xmpp.connect((self.server_address, self.port)):
             # If you do not have the dnspython library installed, you will need
             # to manually specify the name of the server if it does not match
@@ -152,7 +152,9 @@ class Register():
             #
             # if xmpp.connect(('talk.google.com', 5222)):
             #     ...
+            logging.info("Processing...")
             xmpp.process(block=True)
+            logging.info("Processing finished.")
             return True
         else:
             return False
