@@ -129,19 +129,7 @@ class Register():
         xmpp = RegisterBot(logger, jid, password)
         xmpp.register_plugin('xep_0030') # Service Discovery
         xmpp.register_plugin('xep_0004') # Data forms
-        xmpp.register_plugin('xep_0066') # Out-of-band Data
         xmpp.register_plugin('xep_0077') # In-band Registration
-
-        # Some servers don't advertise support for inband registration, even
-        # though they allow it. If this applies to your server, use:
-        xmpp['xep_0077'].force_registration = True
-
-        # If you are working with an OpenFire server, you may need
-        # to adjust the SSL version used:
-        # xmpp.ssl_version = ssl.PROTOCOL_SSLv3
-
-        # If you want to verify the SSL certificates offered by a server:
-        # xmpp.ca_certs = "path/to/ca/cert"
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
