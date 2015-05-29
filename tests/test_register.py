@@ -2,6 +2,7 @@
 # Copyright (C) 2015 the pyp2p authors and contributors
 # <see AUTHORS and LICENSE files>
 import pyp2p.register as reg
+import pyp2p.unregister as unreg
 
 import logging
 import logging.handlers
@@ -25,8 +26,7 @@ class TestRegister:
         self.register = reg.Register(server_address='p2pserver.cloudapp.net', port='5222')
  
     def teardown(self):
-        # self.register.unregister('thing1234@iot.legrand.net','titi')
-        pass
+        unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222').unregister('thing1234@iot.legrand.net','titi')
 
     def test_register(self):
         assert self.register.register('thing1234@iot.legrand.net','titi')
@@ -37,6 +37,7 @@ class TestRegister:
     def test_register_conflict(self):
         asserting_handler = AssertingHandler(200)
         logging.getLogger().addHandler(asserting_handler)
+        assert self.register.register('thing1234@iot.legrand.net','titi')
         self.register.register('thing1234@iot.legrand.net','toto')
         asserting_handler.assert_logged("Could not register account")
         logging.getLogger().removeHandler(asserting_handler)

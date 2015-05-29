@@ -23,12 +23,17 @@ class AssertingHandler(logging.handlers.BufferingHandler):
 class TestUnregister:
  
     def setup(self):
+        self.asserting_handler = AssertingHandler(200)
+        logging.getLogger().addHandler(self.asserting_handler)
         reg.Register(server_address='p2pserver.cloudapp.net', port='5222').register('thing1234@iot.legrand.net','titi')
+        self.asserting_handler.assert_logged("Account created")
+
 
     def teardown(self):
-        pass
+        logging.getLogger().removeHandler(self.asserting_handler)
 
     def test_unregister(self):
         self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')
         self.unregister.unregister('thing1234@iot.legrand.net','titi')
+        self.asserting_handler.assert_logged("User removed")
 
