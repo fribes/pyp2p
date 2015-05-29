@@ -7,4 +7,5 @@ Get source: git clone https://github.com/Legrandgroup/pyp2p.git
 Run tests: nosetests
 
 Note: print statements can be enabled with the -s (or --nocapture) option
+test names can be displayed with the -v option
 
