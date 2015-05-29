@@ -55,12 +55,9 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
                      event does not provide any additional
                      data.
         """
-        iq = self.Iq()
-        iq['type'] = 'set'
-        iq['register']['remove'] = True
 
         try:
-            iq.send(now=True)
+            self.plugin['xep_0077'].cancel_registration()
             self.logger.info("Account removed for %s!" % self.boundjid)
         except IqError as e:
             self.logger.error("Could not remove account: %s" % e.iq['error']['text'])
