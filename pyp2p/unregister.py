@@ -63,8 +63,6 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
             self.logger.error("Could not remove account: %s" % e.iq['error']['text'])
         except IqTimeout:
             self.logger.error("No response from server.")
-
-        # We're only concerned about registering, so nothing more to do here.
         self.disconnect()
 
 
@@ -84,13 +82,14 @@ class Unregister():
         # have interdependencies, the order in which you register them does
         # not matter.
         xmpp = UnRegisterBot(logger, jid, password)
+        xmpp.auto_reconnect = False # prevents reconection when stream is closed on unregister
         xmpp.register_plugin('xep_0030') # Service Discovery
         xmpp.register_plugin('xep_0004') # Data forms
         xmpp.register_plugin('xep_0077') # In-band Registration
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
-        if xmpp.connect((self.server_address, self.port)):
+        if xmpp.connect(address=(self.server_address, self.port)):
             logger.info("Processing...")
             xmpp.process(block=True)
             logger.info("Processing finished.")
