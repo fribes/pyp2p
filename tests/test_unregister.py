@@ -20,7 +20,7 @@ class AssertingHandler(logging.handlers.BufferingHandler):
         assert False
 
 
-class TestRegister:
+class TestUnregister:
  
     def setup(self):
         reg.Register(server_address='p2pserver.cloudapp.net', port='5222').register('thing1234@iot.legrand.net','titi')
@@ -28,7 +28,7 @@ class TestRegister:
     def teardown(self):
         pass
 
-    def test_register(self):
+    def test_unregister(self):
         self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')
         self.unregister.unregister('thing1234@iot.legrand.net','titi')
 
