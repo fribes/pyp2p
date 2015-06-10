@@ -3,13 +3,11 @@
 # Copyright (C) 2015 the pyp2p authors and contributors
 # <see AUTHORS and LICENSE files>
 
-
-import sys
 import logging
 import uuid
 
 
-class Identifier():
+class Identifier(object):
     """
 
         Builds an unique identifier that can be used as a JabberID
