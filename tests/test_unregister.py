@@ -3,6 +3,7 @@
 # <see AUTHORS and LICENSE files>
 import pyp2p.unregister as unreg
 import pyp2p.register as reg
+from pyp2p.identifier import Identifier
 
 import logging
 import logging.handlers
@@ -25,7 +26,8 @@ class TestUnregister:
     def setup(self):
         self.asserting_handler = AssertingHandler(200)
         logging.getLogger().addHandler(self.asserting_handler)
-        reg.Register(server_address='p2pserver.cloudapp.net', port='5222').register('thing1234@iot.legrand.net','titi')
+        self.ident = Identifier(domain="iot.legrand.net").get()
+        reg.Register(server_address='p2pserver.cloudapp.net', port='5222').register(self.ident,'titi')
         self.asserting_handler.assert_logged("Account created")
 
 
@@ -34,6 +36,6 @@ class TestUnregister:
 
     def test_unregister(self):
         self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')
-        self.unregister.unregister('thing1234@iot.legrand.net','titi')
+        self.unregister.unregister(self.ident,'titi')
         self.asserting_handler.assert_logged("User removed")
 
