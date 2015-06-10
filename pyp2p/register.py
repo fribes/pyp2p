@@ -89,11 +89,13 @@ class RegisterBot(sleekxmpp.ClientXMPP):
             resp.send(now=True)
             self.logger.info("Account created for %s!" % self.boundjid)
         except IqError as e:
-            self.logger.error("Could not register account: %s" % e.iq['error']['text'])
+            self.logger.error("Could not register account: %s"
+                              % e.iq['error']['text'])
             self.disconnect()
         except IqTimeout:
             self.logger.error("No response from server.")
             self.disconnect()
+
 
 class Register():
 
@@ -107,13 +109,13 @@ class Register():
 
         logger = logging.getLogger("register")
 
-        # Setup the RegisterBot and register plugins. Note that while plugins may
-        # have interdependencies, the order in which you register them does
-        # not matter.
+        # Setup the RegisterBot and register plugins.
+        # Note that while plugins may have interdependencies,
+        # the order in which you register them does not matter.
         xmpp = RegisterBot(logger, jid, password)
-        xmpp.register_plugin('xep_0030') # Service Discovery
-        xmpp.register_plugin('xep_0004') # Data forms
-        xmpp.register_plugin('xep_0077') # In-band Registration
+        xmpp.register_plugin('xep_0030')  # Service Discovery
+        xmpp.register_plugin('xep_0004')  # Data forms
+        xmpp.register_plugin('xep_0077')  # In-band Registration
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")

@@ -45,7 +45,6 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
         # our roster.
         self.add_event_handler("session_start", self.start, threaded=True)
 
-
     def start(self, event):
         """
         Process the session_start event.
@@ -60,7 +59,8 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
             self.plugin['xep_0077'].cancel_registration()
             self.logger.info("Account removed for %s!" % self.boundjid)
         except IqError as e:
-            self.logger.error("Could not remove account: %s" % e.iq['error']['text'])
+            self.logger.error("Could not remove account: %s"
+                              % e.iq['error']['text'])
         except IqTimeout:
             self.logger.error("No response from server.")
         self.disconnect()
@@ -78,14 +78,11 @@ class Unregister():
 
         logger = logging.getLogger("unregister")
 
-        # Setup the RegisterBot and register plugins. Note that while plugins may
-        # have interdependencies, the order in which you register them does
-        # not matter.
         xmpp = UnRegisterBot(logger, jid, password)
-        xmpp.auto_reconnect = False # prevents reconection when stream is closed on unregister
-        xmpp.register_plugin('xep_0030') # Service Discovery
-        xmpp.register_plugin('xep_0004') # Data forms
-        xmpp.register_plugin('xep_0077') # In-band Registration
+        xmpp.auto_reconnect = False  # prevents reconnection on unregister
+        xmpp.register_plugin('xep_0030')  # Service Discovery
+        xmpp.register_plugin('xep_0004')  # Data forms
+        xmpp.register_plugin('xep_0077')  # In-band Registration
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
