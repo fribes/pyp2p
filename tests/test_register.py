@@ -3,6 +3,7 @@
 # <see AUTHORS and LICENSE files>
 import pyp2p.register as reg
 import pyp2p.unregister as unreg
+from pyp2p.identifier import Identifier
 
 import logging
 import logging.handlers
@@ -24,24 +25,25 @@ class TestRegister:
  
     def setup(self):
         self.register = reg.Register(server_address='p2pserver.cloudapp.net', port='5222')
- 
+        self.ident = Identifier(domain="iot.legrand.net").get()
+
     def teardown(self):
-        unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222').unregister('thing1234@iot.legrand.net','titi')
+        unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222').unregister(self.ident,'titi')
 
     def test_register(self):
-        assert self.register.register('thing1234@iot.legrand.net','titi')
+        assert self.register.register(self.ident,'titi')
 
     def test_register_again(self):
-        assert self.register.register('thing1234@iot.legrand.net','titi')
+        assert self.register.register(self.ident,'titi')
         
     def test_register_conflict(self):
         asserting_handler = AssertingHandler(200)
         logging.getLogger().addHandler(asserting_handler)
-        assert self.register.register('thing1234@iot.legrand.net','titi')
-        self.register.register('thing1234@iot.legrand.net','toto')
+        assert self.register.register(self.ident,'titi')
+        self.register.register(self.ident,'toto')
         asserting_handler.assert_logged("Could not register account")
         logging.getLogger().removeHandler(asserting_handler)
 
     def test_register_twice(self):
-        assert self.register.register('thing1234@iot.legrand.net','titi')
-        assert self.register.register('thing1234@iot.legrand.net','titi')
+        assert self.register.register(self.ident,'titi')
+        assert self.register.register(self.ident,'titi')
