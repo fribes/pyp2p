@@ -97,7 +97,7 @@ class RegisterBot(sleekxmpp.ClientXMPP):
             self.disconnect()
 
 
-class Register():
+class Register(object):
 
     def __init__(self, server_address, port):
         self.server_address = server_address

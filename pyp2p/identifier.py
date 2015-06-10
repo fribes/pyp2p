@@ -14,7 +14,7 @@ class Identifier(object):
 
     """
 
-    def __init__(self, domain, prefix=None, randomize=False):
+    def __init__(self, domain, prefix=None):
         # Setup logging.
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger("identifier")

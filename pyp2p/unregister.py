@@ -66,7 +66,7 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
         self.disconnect()
 
 
-class Unregister():
+class Unregister(object):
 
     def __init__(self, server_address, port):
         self.server_address = server_address
