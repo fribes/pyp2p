@@ -24,8 +24,7 @@ class Identifier():
         if prefix is None:
             self.identifier = "%s@%s" % (str(uuid.uuid4()), domain)
         else:
-            self.identifier = prefix + str(uuid.uuid4().time_low) + "@" \
-                                + domain
+            self.identifier = prefix + str(uuid.uuid4().time_low) + "@" + domain
 
     def get(self):
 
