@@ -36,6 +36,7 @@ def handle_exception(func):
     inner.__doc__ = func.__doc__
     return inner
 
+
 class PyP2pShell(cmd.Cmd):
     """
     PyP2pShell is the Cmd class of the pyp2p lib
