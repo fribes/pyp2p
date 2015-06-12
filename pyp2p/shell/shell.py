@@ -27,6 +27,14 @@ except ImportError:
     from logging import basicConfig
     FORMAT = '%(asctime)s:%(name)s:%(levelname)s: %(message)s'
 
+def handle_exception(func):
+    def inner(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except PyP2pException as error:
+            print("Error: %s" % error.msg)
+    inner.__doc__ = func.__doc__
+    return inner
 
 class PyP2pShell(cmd.Cmd):
     """
@@ -47,6 +55,7 @@ class PyP2pShell(cmd.Cmd):
         self.pp = pprint.PrettyPrinter(indent=4)
         PyP2pShell.intro += "conf file: %s \n" % self.conf_filename
 
+    @handle_exception
     def do_clear(self, arg):
         """
         Clear screen
@@ -54,6 +63,7 @@ class PyP2pShell(cmd.Cmd):
         arg = arg
         os.system('clear')
 
+    @handle_exception
     def do_register(self, arg):
         """
         Register on xmpp server
@@ -64,6 +74,7 @@ class PyP2pShell(cmd.Cmd):
         reg.Register(server_address='p2pserver.cloudapp.net', port='5222')\
             .register(arg[0], arg[1])
 
+    @handle_exception
     def do_unregister(self, arg):
         """
         Unregister from xmpp server
@@ -74,6 +85,7 @@ class PyP2pShell(cmd.Cmd):
         unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')\
             .unregister(arg[0], arg[1])
 
+    @handle_exception
     def do_display_roster(self, arg):
         """
         Display user roster
@@ -136,9 +148,9 @@ def main():
     except KeyboardInterrupt:
         print("Bye!")
         sys.exit(0)
-    # except Exception as error:
-    #     print("Uncaught error: %s" % error)
-    #     sys.exit(1)
+    except Exception as error:
+        print("Uncaught error: %s" % error)
+        sys.exit(1)
 
 if __name__ == '__main__':
     main()
