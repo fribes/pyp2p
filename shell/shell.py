@@ -15,6 +15,11 @@ from contextlib import closing
 from pyp2p import __version__
 from core.exceptions import PyP2pException
 
+import pyp2p.register as reg
+import pyp2p.unregister as unreg
+from pyp2p.session import P2pSession
+
+
 try:
     from colorlog import basicConfig
     FORMAT = '%(log_color)s%(asctime)s:%(name)s:%(levelname)s: %(message)s'
@@ -48,6 +53,38 @@ class PyP2pShell(cmd.Cmd):
         """
         arg = arg
         os.system('clear')
+
+    def do_register(self, arg):
+        """
+        Register on xmpp server
+
+        arg: JID password
+        """
+        arg = arg.split()
+        reg.Register(server_address='p2pserver.cloudapp.net', port='5222')\
+            .register(arg[0], arg[1])
+
+    def do_unregister(self, arg):
+        """
+        Unregister from xmpp server
+
+        arg: JID password
+        """
+        arg = arg.split()
+        unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')\
+            .unregister(arg[0], arg[1])
+
+    def do_display_roster(self, arg):
+        """
+        Display user roster
+
+        arg: JID password
+        """
+        arg = arg.split()
+        session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
+        session.start_session(jid=arg[0], password=arg[1])
+        session.display_roster()
+        session.disconnect()
 
 
 def get_conf_filename(options):
@@ -99,9 +136,9 @@ def main():
     except KeyboardInterrupt:
         print("Bye!")
         sys.exit(0)
-    except Exception as error:
-        print("Uncaught error: %s" % error)
-        sys.exit(1)
+    # except Exception as error:
+    #     print("Uncaught error: %s" % error)
+    #     sys.exit(1)
 
 if __name__ == '__main__':
     main()
