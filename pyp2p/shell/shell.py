@@ -13,7 +13,7 @@ import os
 from optparse import OptionParser
 from contextlib import closing
 from pyp2p import __version__
-from core.exceptions import PyP2pException
+from pyp2p.core.exceptions import PyP2pException
 
 import pyp2p.register as reg
 import pyp2p.unregister as unreg
