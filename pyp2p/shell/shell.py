@@ -27,6 +27,7 @@ except ImportError:
     from logging import basicConfig
     FORMAT = '%(asctime)s:%(name)s:%(levelname)s: %(message)s'
 
+
 def handle_exception(func):
     def inner(*args, **kwargs):
         try:
