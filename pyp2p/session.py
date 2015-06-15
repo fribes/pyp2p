@@ -86,7 +86,7 @@ class P2pSession(object):
         # Setup logging.
         logging.basicConfig(level=logging.DEBUG)
 
-        logger = logging.getLogger("unregister")
+        logger = logging.getLogger("p2psession")
 
         self.bot = SessionBot(jid, password)
         self.bot.auto_reconnect = False
