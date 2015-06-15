@@ -10,6 +10,7 @@ import sys
 import logging
 import pprint
 import os
+import time
 from optparse import OptionParser
 from contextlib import closing
 from pyp2p import __version__
@@ -97,7 +98,21 @@ class PyP2pShell(cmd.Cmd):
         arg = arg.split()
         session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
         session.start_session(jid=arg[0], password=arg[1])
+        time.sleep(3)
         session.display_roster()
+        session.disconnect()
+
+    @handle_exception
+    def do_subscribe(self, arg):
+        """
+        Subscribe to a xmpp user
+
+        arg: JID password subscription_JID 
+        """
+        arg = arg.split()
+        session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
+        session.start_session(jid=arg[0], password=arg[1])
+        session.subscribe(targetjid = arg[2])
         session.disconnect()
 
 

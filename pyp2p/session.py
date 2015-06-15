@@ -76,6 +76,12 @@ class SessionBot(sleekxmpp.ClientXMPP):
                 else:
                     print(' %s [%s]' % (jid, sub))
 
+    def subscribe(self, targetjid):
+        """ 
+        Subscribe to another xmpp account
+        """
+        self.send_presence(pto=targetjid, ptype='subscribe')
+
 
 class P2pSession(object):
     def __init__(self, server_address, port):
@@ -111,3 +117,9 @@ class P2pSession(object):
         Ends session
         """
         self.bot.disconnect()
+
+    def subscribe(self, targetjid):
+        """ 
+        Subscribe to another xmpp account
+        """
+        self.bot.subscribe(targetjid=targetjid)
