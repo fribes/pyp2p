@@ -107,12 +107,12 @@ class PyP2pShell(cmd.Cmd):
         """
         Subscribe to a xmpp user
 
-        arg: JID password subscription_JID 
+        arg: JID password subscription_JID
         """
         arg = arg.split()
         session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
         session.start_session(jid=arg[0], password=arg[1])
-        session.subscribe(targetjid = arg[2])
+        session.subscribe(targetjid=arg[2])
         session.disconnect()
 
 
