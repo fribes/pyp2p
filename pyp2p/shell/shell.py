@@ -75,9 +75,9 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        reg.Register(server_address=self.conf["iot.legrand.net"]["server"], \
+        reg.Register(server_address=self.conf["iot.legrand.net"]["server"],
                      port=self.conf["iot.legrand.net"]["port"])\
-                    .register(arg[0], arg[1])
+           .register(arg[0], arg[1])
 
     @handle_exception
     def do_unregister(self, arg):
@@ -87,20 +87,20 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        unreg.Unregister(server_address=self.conf["iot.legrand.net"]["server"], \
+        unreg.Unregister(server_address=self.conf["iot.legrand.net"]["server"],
                          port=self.conf["iot.legrand.net"]["port"])\
-                         .unregister(arg[0], arg[1])
+             .unregister(arg[0], arg[1])
 
     @handle_exception
     def do_start_session(self, arg):
-        """ 
-        Start an xmpp session to server defined in conf with JID and password 
+        """
+        Start an xmpp session to server defined in conf with JID and password
         passed in argument
 
         arg: JID password
         """
         arg = arg.split()
-        self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"], \
+        self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"],
                                   port=self.conf["iot.legrand.net"]["port"])
         self.session.start_session(jid=arg[0], password=arg[1])
         PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
@@ -111,7 +111,7 @@ class PyP2pShell(cmd.Cmd):
         End an xmpp session
         """
         self.session.disconnect()
-        time.sleep(2)  #let the stream close nicely
+        time.sleep(2)  # let the stream close nicely
         self.session = None
         PyP2pShell.prompt = '(pyp2p) '
 
