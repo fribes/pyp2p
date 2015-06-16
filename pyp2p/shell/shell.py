@@ -15,6 +15,7 @@ from optparse import OptionParser
 from contextlib import closing
 from pyp2p import __version__
 from pyp2p.core.exceptions import PyP2pException
+from pyp2p.conf.jsonreader import JSONConfReader
 
 import pyp2p.register as reg
 import pyp2p.unregister as unreg
@@ -51,12 +52,12 @@ class PyP2pShell(cmd.Cmd):
             "####################################\n" % __version__
     prompt = '(pyp2p) '
 
-    def __init__(self, conf_filename=None):
+    def __init__(self, conf):
         cmd.Cmd.__init__(self)
-        self.conf_filename = conf_filename
+        self.conf = conf
         self.logger = logging.getLogger("pyp2p.shell")
         self.pp = pprint.PrettyPrinter(indent=4)
-        PyP2pShell.intro += "conf file: %s \n" % self.conf_filename
+        self.session = None
 
     @handle_exception
     def do_clear(self, arg):
@@ -74,8 +75,9 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        reg.Register(server_address='p2pserver.cloudapp.net', port='5222')\
-            .register(arg[0], arg[1])
+        reg.Register(server_address=self.conf["iot.legrand.net"]["server"], \
+                     port=self.conf["iot.legrand.net"]["port"])\
+                    .register(arg[0], arg[1])
 
     @handle_exception
     def do_unregister(self, arg):
@@ -85,35 +87,59 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')\
-            .unregister(arg[0], arg[1])
+        unreg.Unregister(server_address=self.conf["iot.legrand.net"]["server"], \
+                         port=self.conf["iot.legrand.net"]["port"])\
+                         .unregister(arg[0], arg[1])
+
+    @handle_exception
+    def do_start_session(self, arg):
+        """ 
+        Start an xmpp session to server defined in conf with JID and password 
+        passed in argument
+
+        arg: JID password
+        """
+        arg = arg.split()
+        self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"], \
+                                  port=self.conf["iot.legrand.net"]["port"])
+        self.session.start_session(jid=arg[0], password=arg[1])
+        PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
+
+    @handle_exception
+    def do_end_session(self, arg):
+        """
+        End an xmpp session
+        """
+        self.session.disconnect()
+        time.sleep(2)  #let the stream close nicely
+        self.session = None
+        PyP2pShell.prompt = '(pyp2p) '
 
     @handle_exception
     def do_display_roster(self, arg):
         """
         Display user roster
+        Require an active session
 
-        arg: JID password
+        arg: none
         """
-        arg = arg.split()
-        session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
-        session.start_session(jid=arg[0], password=arg[1])
-        time.sleep(3)
-        session.display_roster()
-        session.disconnect()
+        try:
+            self.session.display_roster()
+        except AttributeError:
+            print("No session active")
 
     @handle_exception
     def do_subscribe(self, arg):
         """
         Subscribe to a xmpp user
+        Require an active session
 
-        arg: JID password subscription_JID
+        arg: target_JID
         """
-        arg = arg.split()
-        session = P2pSession(server_address='p2pserver.cloudapp.net', port='5222')
-        session.start_session(jid=arg[0], password=arg[1])
-        session.subscribe(targetjid=arg[2])
-        session.disconnect()
+        try:
+            self.session.subscribe(targetjid=arg[0])
+        except AttributeError:
+            print("No session active")
 
 
 def get_conf_filename(options):
@@ -122,17 +148,13 @@ def get_conf_filename(options):
     """
     if options.conf_filename is None:
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        default_conf = os.path.join(current_dir, "conf.json")
-        if os.path.exists(default_conf):
-            conf_filename = default_conf
-        else:
-            conf_filename = None
+        conf_filename = os.path.join(current_dir, "conf.json")
     else:
-        if os.path.exists(options.conf_filename):
-            conf_filename = options.conf_filename
-        else:
-            print("Error: %s does not exist" % options.conf_filename)
-            sys.exit(1)
+        conf_filename = options.conf_filename
+
+    if not os.path.exists(conf_filename):
+        print("Error: %s does not exist" % options.conf_filename)
+        sys.exit(1)
     return conf_filename
 
 
@@ -154,8 +176,10 @@ def main():
 
     basicConfig(level=level, format=FORMAT)
 
+    conf = JSONConfReader(conf_filename=get_conf_filename(options)).conf
+
     try:
-        shell = PyP2pShell(conf_filename=get_conf_filename(options))
+        shell = PyP2pShell(conf=conf)
         if options.check:
             sys.exit(0)
         shell.cmdloop()
