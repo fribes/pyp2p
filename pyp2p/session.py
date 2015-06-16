@@ -36,6 +36,13 @@ class SessionBot(sleekxmpp.ClientXMPP):
     def __init__(self, jid, password):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.start, threaded=True)
+        self.add_event_handler("failed_auth", self.failed_auth)
+
+    def failed_auth(self, event):
+        """ 
+        Process failed authentification event
+        """
+        print("Authentification failed !")
 
     def start(self, event):
         """
