@@ -55,12 +55,12 @@ class SessionBot(sleekxmpp.ClientXMPP):
             print"%(body)s" % msg
 
     def my_send(self, recipient, msg):
-        """ 
+        """
         Send a single message to a recipient
         """
         self.send_message(mto=recipient,
-                      mbody=msg,
-                      mtype='chat')
+                          mbody=msg,
+                          mtype='chat')
 
     def failed_auth(self, event):
         """
@@ -156,7 +156,7 @@ class P2pSession(object):
         self.bot.subscribe(targetjid=targetjid)
 
     def session_send(self, recipient, msg):
-        """ 
+        """
         Send a single message to a recipient
         """
         self.bot.my_send(recipient=recipient, msg=msg)
