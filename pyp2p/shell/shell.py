@@ -99,11 +99,14 @@ class PyP2pShell(cmd.Cmd):
 
         arg: JID password
         """
-        arg = arg.split()
-        self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"],
-                                  port=self.conf["iot.legrand.net"]["port"])
-        self.session.start_session(jid=arg[0], password=arg[1])
-        PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
+        if self.session is not None:
+            print("Already in a session. End session first.")
+        else:
+            arg = arg.split()
+            self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"],
+                                      port=self.conf["iot.legrand.net"]["port"])
+            self.session.start_session(jid=arg[0], password=arg[1])
+            PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
 
     @handle_exception
     def do_end_session(self, arg):
@@ -136,8 +139,23 @@ class PyP2pShell(cmd.Cmd):
 
         arg: target_JID
         """
+        arg = arg.split()
         try:
             self.session.subscribe(targetjid=arg[0])
+        except AttributeError:
+            print("No session active")
+
+    @handle_exception
+    def do_send(self, arg):
+        """
+        Send a message to a xmpp user
+        Require an active session
+
+        arg: JID msg
+        """
+        arg = arg.split()
+        try:
+            self.session.session_send(recipient=arg[0], msg=arg[1])
         except AttributeError:
             print("No session active")
 

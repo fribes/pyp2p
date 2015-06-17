@@ -37,9 +37,33 @@ class SessionBot(sleekxmpp.ClientXMPP):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.start, threaded=True)
         self.add_event_handler("failed_auth", self.failed_auth)
+        self.add_event_handler("message", self.message)
+
+    def message(self, msg):
+        """
+        Process incoming message stanzas. Be aware that this also
+        includes MUC messages and error messages. It is usually
+        a good idea to check the messages's type before processing
+        or sending replies.
+
+        Arguments:
+            msg -- The received message stanza. See the documentation
+                   for stanza objects and the Message stanza to see
+                   how it may be used.
+        """
+        if msg['type'] in ('chat', 'normal'):
+            print"%(body)s" % msg
+
+    def my_send(self, recipient, msg):
+        """ 
+        Send a single message to a recipient
+        """
+        self.send_message(mto=recipient,
+                      mbody=msg,
+                      mtype='chat')
 
     def failed_auth(self, event):
-        """ 
+        """
         Process failed authentification event
         """
         print("Authentification failed !")
@@ -130,3 +154,9 @@ class P2pSession(object):
         Subscribe to another xmpp account
         """
         self.bot.subscribe(targetjid=targetjid)
+
+    def session_send(self, recipient, msg):
+        """ 
+        Send a single message to a recipient
+        """
+        self.bot.my_send(recipient=recipient, msg=msg)
