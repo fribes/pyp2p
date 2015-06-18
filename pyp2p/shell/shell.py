@@ -103,8 +103,10 @@ class PyP2pShell(cmd.Cmd):
             print("Already in a session. End session first.")
         else:
             arg = arg.split()
-            self.session = P2pSession(server_address=self.conf["iot.legrand.net"]["server"],
-                                      port=self.conf["iot.legrand.net"]["port"])
+            server = self.conf["iot.legrand.net"]["server"]
+            port = self.conf["iot.legrand.net"]["port"]
+            self.session = P2pSession(server_address=server,
+                                      port=port)
             self.session.start_session(jid=arg[0], password=arg[1])
             PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
 
