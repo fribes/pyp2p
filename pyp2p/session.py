@@ -14,7 +14,7 @@ import logging
 
 import sleekxmpp
 from sleekxmpp.exceptions import IqError, IqTimeout
-
+from sleekxmpp.jid import JID
 
 # Python versions before 3.0 do not use UTF-8 encoding
 # by default. To ensure that Unicode is handled properly
@@ -52,7 +52,8 @@ class SessionBot(sleekxmpp.ClientXMPP):
                    how it may be used.
         """
         if msg['type'] in ('chat', 'normal'):
-            print"%(body)s" % msg
+            from_jid = JID(msg['from']).bare
+            print("%s:%s" % (from_jid, msg['body']))
 
     def my_send(self, recipient, msg):
         """
