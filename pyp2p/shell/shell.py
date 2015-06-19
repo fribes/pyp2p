@@ -136,7 +136,7 @@ class PyP2pShell(cmd.Cmd):
     @handle_exception
     def do_subscribe(self, arg):
         """
-        Subscribe to a xmpp user
+        Subscribe to a xmpp user presence
         Require an active session
 
         arg: target_JID
@@ -144,6 +144,34 @@ class PyP2pShell(cmd.Cmd):
         arg = arg.split()
         try:
             self.session.subscribe(targetjid=arg[0])
+        except AttributeError:
+            print("No session active")
+
+    @handle_exception
+    def do_unsubscribe(self, arg):
+        """
+        Unsubscribe from a xmpp user presence
+        Require an active session
+
+        arg: target_JID
+        """
+        arg = arg.split()
+        try:
+            self.session.unsubscribe(targetjid=arg[0])
+        except AttributeError:
+            print("No session active")
+
+    @handle_exception
+    def do_remove(self, arg):
+        """
+        Remove completely a xmpp account from roster
+        Require an active session
+
+        arg: target_JID
+        """
+        arg = arg.split()
+        try:
+            self.session.remove(targetjid=arg[0])
         except AttributeError:
             print("No session active")
 

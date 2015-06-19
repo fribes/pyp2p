@@ -114,6 +114,12 @@ class SessionBot(sleekxmpp.ClientXMPP):
         """
         self.send_presence(pto=targetjid, ptype='subscribe')
 
+    def unsubscribe(self, targetjid):
+        """
+        Unsubscribe from an xmpp account
+        """
+        self.send_presence(pto=targetjid, ptype='unsubscribe')
+
 
 class P2pSession(object):
     def __init__(self, server_address, port):
@@ -152,9 +158,21 @@ class P2pSession(object):
 
     def subscribe(self, targetjid):
         """
-        Subscribe to another xmpp account
+        Subscribe to an xmpp account presence
         """
         self.bot.subscribe(targetjid=targetjid)
+
+    def unsubscribe(self, targetjid):
+        """
+        Unsubscribe from an xmpp account presence
+        """
+        self.bot.unsubscribe(targetjid=targetjid)
+
+    def remove(self, targetjid):
+        """
+        Remove completely an xmpp account from user roster
+        """
+        self.bot.del_roster_item(jid=targetjid)
 
     def session_send(self, recipient, msg):
         """
