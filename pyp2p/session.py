@@ -134,6 +134,7 @@ class P2pSession(object):
 
         self.bot = SessionBot(jid, password)
         self.bot.auto_reconnect = False
+        self.bot.register_plugin('xep_0016') # Privacy
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
