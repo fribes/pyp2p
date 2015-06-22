@@ -55,7 +55,7 @@ class SessionBot(sleekxmpp.ClientXMPP):
             from_jid = JID(msg['from']).bare
             print("%s:%s" % (from_jid, msg['body']))
 
-    def my_send(self, recipient, msg):
+    def bot_send(self, recipient, msg):
         """
         Send a single message to a recipient
         """
@@ -179,4 +179,4 @@ class P2pSession(object):
         """
         Send a single message to a recipient
         """
-        self.bot.my_send(recipient=recipient, msg=msg)
+        self.bot.bot_send(recipient=recipient, msg=msg)
