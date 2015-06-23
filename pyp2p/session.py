@@ -129,44 +129,60 @@ class SessionBot(sleekxmpp.ClientXMPP):
         iq = self.Iq()
         iq['type'] = 'set'
         iq['privacy']['list']['name'] = 'roster_only'
-        priv_list = iq['privacy']['list']
+        rules = iq['privacy']['list']
 
         # deny message if subscrition is none
-        priv_list.add_item(value='none',
-                           action='deny',
-                           order='437',
-                           itype='subscription',
-                           message=True)
+        rules.add_item(value='none',
+                       action='deny',
+                       order='437',
+                       itype='subscription',
+                       message=True)
 
         try:
             iq.send(now=True)
-            logging.info("Privacy set")
+            logging.info("Privacy rules defined")
         except IqError as e:
-            logging.error("Error: %s" % e.iq['error']['text'])
+            logging.error("Error: %s" % e.iq['error']['condition'])
         except IqTimeout:
             logging.error("No response from server.")
 
         iq = self.Iq()
         iq['type'] = 'set'
-        iq['privacy']['active']['name'] = 'roster_only'
+        iq['privacy']['default']['name'] = 'roster_only'
+
         try:
             iq.send(now=True)
-            logging.info("Privacy actvivated")
+            logging.info("Default privacy rules set")
         except IqError as e:
-            logging.error("Error: %s" % e.iq['error']['text'])
+            logging.error("Error: %s" % e.iq['error']['condition'])
         except IqTimeout:
             logging.error("No response from server.")
 
-    def get_privacy(self):
+    def get_privacy_list(self):
         """
         Get privacy list
         """
         iq = self.Iq()
         iq['type'] = 'get'
-        iq['privacy']['list']['name'] = 'roster_only'
+        iq['privacy']['list']['name'] = 'default'
         try:
             iq.send(now=True)
             logging.info("Privacy get")
+        except IqError as e:
+            logging.error("Error: %s" % e)
+        except IqTimeout:
+            logging.error("No response from server.")
+
+    def get_lists(self):
+        """
+        Get privacy lists
+        """
+        iq = self.Iq()
+        iq['type'] = 'get'
+        iq.enable('privacy')
+        try:
+            iq.send(now=True)
+            logging.info("Privacy lists get")
         except IqError as e:
             logging.error("Error: %s" % e)
         except IqTimeout:
@@ -238,6 +254,12 @@ class P2pSession(object):
         Retrieve privacy list
         """
         return self.bot.get_privacy()
+
+    def get_lists(self):
+        """
+        Retrieve privacy list
+        """
+        return self.bot.get_lists()
 
     def set_privacy(self):
         """

@@ -220,6 +220,20 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @handle_exception
+    def do_get_lists(self, arg):
+        """
+        Display privacy lists
+        Require an active session
+
+        """
+        arg = arg
+        try:
+            privacy_lists = self.session.get_lists()
+            print(privacy_lists)
+        except AttributeError:
+            print("No session active")
+
 
 def get_conf_filename(options):
     """
