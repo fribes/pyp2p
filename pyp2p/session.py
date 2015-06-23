@@ -55,14 +55,6 @@ class SessionBot(sleekxmpp.ClientXMPP):
             from_jid = JID(msg['from']).bare
             print("%s:%s" % (from_jid, msg['body']))
 
-    def bot_send(self, recipient, msg):
-        """
-        Send a single message to a recipient
-        """
-        self.send_message(mto=recipient,
-                          mbody=msg,
-                          mtype='chat')
-
     def failed_auth(self, event):
         """
         Process failed authentification event
@@ -233,7 +225,9 @@ class P2pSession(object):
         """
         Send a single message to a recipient
         """
-        self.bot.bot_send(recipient=recipient, msg=msg)
+        self.bot.send_message(mto=recipient,
+                          mbody=msg,
+                          mtype='chat')
 
     def get_privacy(self):
         """
