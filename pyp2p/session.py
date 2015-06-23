@@ -33,11 +33,12 @@ class SessionBot(sleekxmpp.ClientXMPP):
     A bot that handle xmpp session
     """
 
-    def __init__(self, jid, password):
+    def __init__(self, jid, password, logger):
         sleekxmpp.ClientXMPP.__init__(self, jid, password)
         self.add_event_handler("session_start", self.start, threaded=True)
         self.add_event_handler("failed_auth", self.failed_auth)
         self.add_event_handler("message", self.message)
+        self.logger = logger
 
     def message(self, msg):
         """
@@ -53,13 +54,13 @@ class SessionBot(sleekxmpp.ClientXMPP):
         """
         if msg['type'] in ('chat', 'normal'):
             from_jid = JID(msg['from']).bare
-            print("%s:%s" % (from_jid, msg['body']))
+            self.logger.info("%s:%s" % (from_jid, msg['body']))
 
     def failed_auth(self, event):
         """
         Process failed authentification event
         """
-        print("Authentification failed !")
+        self.logger.warn("Authentification failed !")
 
     def start(self, event):
         """
@@ -77,9 +78,9 @@ class SessionBot(sleekxmpp.ClientXMPP):
         try:
             self.get_roster()
         except IqError as err:
-            print('Error: %' % err.iq['error']['condition'])
+            self.logger.error('%s' % err.iq['error']['condition'])
         except IqTimeout:
-            print('Error: Request timed out')
+            self.logger.error('Request timed out')
         self.send_presence()
 
     def subscribe(self, targetjid):
@@ -114,11 +115,11 @@ class SessionBot(sleekxmpp.ClientXMPP):
 
         try:
             iq.send(now=True)
-            logging.info("Privacy rules defined")
+            self.logger.info("Privacy rules defined")
         except IqError as e:
-            logging.error("Error: %s" % e.iq['error']['condition'])
+            self.logger.error("Error: %s" % e.iq['error']['condition'])
         except IqTimeout:
-            logging.error("No response from server.")
+            self.logger.error("No response from server.")
 
         iq = self.Iq()
         iq['type'] = 'set'
@@ -126,11 +127,11 @@ class SessionBot(sleekxmpp.ClientXMPP):
 
         try:
             iq.send(now=True)
-            logging.info("Default privacy rules set")
+            self.logger.info("Default privacy rules set")
         except IqError as e:
-            logging.error("Error: %s" % e.iq['error']['condition'])
+            self.logger.error("Error: %s" % e.iq['error']['condition'])
         except IqTimeout:
-            logging.error("No response from server.")
+            self.logger.error("No response from server.")
 
     def get_privacy_list(self):
         """
@@ -141,11 +142,11 @@ class SessionBot(sleekxmpp.ClientXMPP):
         iq['privacy']['list']['name'] = 'default'
         try:
             iq.send(now=True)
-            logging.info("Privacy get")
+            self.logger.info("Privacy get")
         except IqError as e:
-            logging.error("Error: %s" % e)
+            self.logger.error("Error: %s" % e)
         except IqTimeout:
-            logging.error("No response from server.")
+            self.logger.error("No response from server.")
 
     def get_lists(self):
         """
@@ -156,11 +157,11 @@ class SessionBot(sleekxmpp.ClientXMPP):
         iq.enable('privacy')
         try:
             iq.send(now=True)
-            logging.info("Privacy lists get")
+            self.logger.info("Privacy lists get")
         except IqError as e:
-            logging.error("Error: %s" % e)
+            self.logger.error("Error: %s" % e)
         except IqTimeout:
-            logging.error("No response from server.")
+            self.logger.error("No response from server.")
 
 
 class P2pSession(object):
@@ -175,7 +176,7 @@ class P2pSession(object):
         logger = logging.getLogger("p2psession")
 
         self.jid = jid
-        self.bot = SessionBot(jid, password)
+        self.bot = SessionBot(jid, password, logger)
         self.bot.auto_reconnect = False
         self.bot.register_plugin('xep_0016')  # Privacy
 
@@ -226,8 +227,8 @@ class P2pSession(object):
         Send a single message to a recipient
         """
         self.bot.send_message(mto=recipient,
-                          mbody=msg,
-                          mtype='chat')
+                              mbody=msg,
+                              mtype='chat')
 
     def get_privacy(self):
         """
