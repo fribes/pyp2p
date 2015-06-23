@@ -125,7 +125,7 @@ class PyP2pShell(cmd.Cmd):
         PyP2pShell.prompt = '(pyp2p) '
 
     @handle_exception
-    def do_display_roster(self, arg):
+    def do_show_roster(self, arg):
         """
         Display user roster
         Require an active session
@@ -133,9 +133,23 @@ class PyP2pShell(cmd.Cmd):
         arg: none
         """
         try:
-            self.session.display_roster()
+            roster = self.session.get_roster()
+            jid = self.session.get_jid()
         except AttributeError:
             print("No session active")
+
+        print('Roster for %s' % jid)
+        groups = roster.groups()
+        for group in groups:
+            print('\n%s' % group)
+            print('-' * 72)
+            for jid in groups[group]:
+                sub = roster[jid]['subscription']
+                name = roster[jid]['name']
+                if roster[jid]['name']:
+                    print(' %s (%s) [%s]' % (name, jid, sub))
+                else:
+                    print(' %s [%s]' % (jid, sub))
 
     @handle_exception
     def do_subscribe(self, arg):

@@ -90,24 +90,6 @@ class SessionBot(sleekxmpp.ClientXMPP):
             print('Error: Request timed out')
         self.send_presence()
 
-    def display_roster(self):
-        """
-        Display roster
-        """
-
-        print('Roster for %s' % self.boundjid.bare)
-        groups = self.client_roster.groups()
-        for group in groups:
-            print('\n%s' % group)
-            print('-' * 72)
-            for jid in groups[group]:
-                sub = self.client_roster[jid]['subscription']
-                name = self.client_roster[jid]['name']
-                if self.client_roster[jid]['name']:
-                    print(' %s (%s) [%s]' % (name, jid, sub))
-                else:
-                    print(' %s [%s]' % (jid, sub))
-
     def subscribe(self, targetjid):
         """
         Subscribe to another xmpp account
@@ -200,6 +182,7 @@ class P2pSession(object):
 
         logger = logging.getLogger("p2psession")
 
+        self.jid = jid
         self.bot = SessionBot(jid, password)
         self.bot.auto_reconnect = False
         self.bot.register_plugin('xep_0016')  # Privacy
@@ -213,11 +196,14 @@ class P2pSession(object):
         else:
             return False
 
-    def display_roster(self):
+    def get_jid(self):
         """
-        Display roster
+        Return current session bare jid
         """
-        self.bot.display_roster()
+        return self.jid
+
+    def get_roster(self):
+        return self.bot.client_roster
 
     def disconnect(self):
         """
