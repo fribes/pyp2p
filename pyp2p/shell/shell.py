@@ -115,7 +115,11 @@ class PyP2pShell(cmd.Cmd):
         """
         End an xmpp session
         """
-        self.session.disconnect()
+        try:
+            self.session.disconnect()
+        except AttributeError:
+            print("No session active")
+
         time.sleep(2)  # let the stream close nicely
         self.session = None
         PyP2pShell.prompt = '(pyp2p) '
@@ -189,6 +193,33 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @handle_exception
+    def do_get_privacy(self, arg):
+        """
+        Display privacy list
+        Require an active session
+
+        """
+        arg = arg
+        try:
+            privacy_list = self.session.get_privacy()
+            print(privacy_list)
+        except AttributeError:
+            print("No session active")
+
+    @handle_exception
+    def do_set_privacy(self, arg):
+        """
+        Set privacy list
+        Require an active session
+
+        """
+        arg = arg
+        try:
+            self.session.set_privacy()
+        except AttributeError:
+            print("No session active")
+
 
 def get_conf_filename(options):
     """
@@ -226,6 +257,7 @@ def main():
 
     conf = JSONConfReader(conf_filename=get_conf_filename(options)).conf
 
+    exit_no = 0
     try:
         shell = PyP2pShell(conf=conf)
         if options.check:
@@ -233,13 +265,20 @@ def main():
         shell.cmdloop()
     except PyP2pException as error:
         print("Error: %s" % error)
-        sys.exit(2)
+        exit_no = 2
     except KeyboardInterrupt:
         print("Bye!")
-        sys.exit(0)
+        exit_no = 0
     except Exception as error:
         print("Uncaught error: %s" % error)
-        sys.exit(1)
+        exit_no = 1
+    finally:
+        try:
+            shell.session.disconnect()
+        except AttributeError:  # session already ended
+            pass
+        sys.exit(exit_no)
+
 
 if __name__ == '__main__':
     main()

@@ -120,6 +120,58 @@ class SessionBot(sleekxmpp.ClientXMPP):
         """
         self.send_presence(pto=targetjid, ptype='unsubscribe')
 
+    def set_privacy(self):
+        """
+        Set privacy to block anything from users that
+        are not in the roster
+        """
+
+        iq = self.Iq()
+        iq['type'] = 'set'
+        iq['privacy']['list']['name'] = 'roster_only'
+        priv_list = iq['privacy']['list']
+
+        # deny message if subscrition is none
+        priv_list.add_item(value='none',
+                           action='deny',
+                           order='437',
+                           itype='subscription',
+                           message=True)
+
+        try:
+            iq.send(now=True)
+            logging.info("Privacy set")
+        except IqError as e:
+            logging.error("Error: %s" % e.iq['error']['text'])
+        except IqTimeout:
+            logging.error("No response from server.")
+
+        iq = self.Iq()
+        iq['type'] = 'set'
+        iq['privacy']['active']['name'] = 'roster_only'
+        try:
+            iq.send(now=True)
+            logging.info("Privacy actvivated")
+        except IqError as e:
+            logging.error("Error: %s" % e.iq['error']['text'])
+        except IqTimeout:
+            logging.error("No response from server.")
+
+    def get_privacy(self):
+        """
+        Get privacy list
+        """
+        iq = self.Iq()
+        iq['type'] = 'get'
+        iq['privacy']['list']['name'] = 'roster_only'
+        try:
+            iq.send(now=True)
+            logging.info("Privacy get")
+        except IqError as e:
+            logging.error("Error: %s" % e)
+        except IqTimeout:
+            logging.error("No response from server.")
+
 
 class P2pSession(object):
     def __init__(self, server_address, port):
@@ -134,7 +186,7 @@ class P2pSession(object):
 
         self.bot = SessionBot(jid, password)
         self.bot.auto_reconnect = False
-        self.bot.register_plugin('xep_0016') # Privacy
+        self.bot.register_plugin('xep_0016')  # Privacy
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
@@ -180,3 +232,16 @@ class P2pSession(object):
         Send a single message to a recipient
         """
         self.bot.bot_send(recipient=recipient, msg=msg)
+
+    def get_privacy(self):
+        """
+        Retrieve privacy list
+        """
+        return self.bot.get_privacy()
+
+    def set_privacy(self):
+        """
+        Set privacy to block anything from user that
+        are not in the roster
+        """
+        self.bot.set_privacy()
