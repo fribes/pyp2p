@@ -73,7 +73,40 @@ class RegisterBot(sleekxmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
-        # We're only concerned about registering, so nothing more to do here.
+        # define a privacy list 
+        iq = self.Iq()
+        iq['type'] = 'set'
+        iq['privacy']['list']['name'] = 'roster_only'
+        rules = iq['privacy']['list']
+
+        # deny message if subscrition is none
+        rules.add_item(value='none',
+                       action='deny',
+                       order='437',
+                       itype='subscription',
+                       message=True)
+
+        try:
+            iq.send(now=True)
+            logging.info("Privacy rules defined")
+        except IqError as e:
+            logging.error("Error: %s" % e.iq['error']['text'])
+        except IqTimeout:
+            logging.error("No response from server.")
+
+        # set the list to be the defaut one
+        iq = self.Iq()
+        iq['type'] = 'set'
+        iq['privacy']['default']['name'] = 'roster_only'
+
+        try:
+            iq.send(now=True)
+            logging.info("Default privacy rules set")
+        except IqError as e:
+            logging.error("Error: %s" % e.iq['error']['text'])
+        except IqTimeout:
+            logging.error("No response from server.")
+
         self.disconnect()
 
     def register(self, iq):
@@ -116,6 +149,7 @@ class Register(object):
         xmpp.register_plugin('xep_0030')  # Service Discovery
         xmpp.register_plugin('xep_0004')  # Data forms
         xmpp.register_plugin('xep_0077')  # In-band Registration
+        xmpp.register_plugin('xep_0016')  # Privacy
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
