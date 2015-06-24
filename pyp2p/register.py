@@ -73,7 +73,7 @@ class RegisterBot(sleekxmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
-        # define a privacy list 
+        # define a privacy list
         iq = self.Iq()
         iq['type'] = 'set'
         iq['privacy']['list']['name'] = 'roster_only'

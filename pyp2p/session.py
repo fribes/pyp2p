@@ -149,7 +149,6 @@ class SessionBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             self.logger.error("No response from server.")
 
-
     def get_lists(self):
         """
         Get privacy lists
