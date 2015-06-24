@@ -203,7 +203,7 @@ class PyP2pShell(cmd.Cmd):
         """
         arg = arg.split()
         try:
-            self.session.session_send(recipient=arg[0], msg=arg[1])
+            self.session.session_send(recipient=arg[0], msg=' '.join(arg[1:]))
         except AttributeError:
             print("No session active")
 
