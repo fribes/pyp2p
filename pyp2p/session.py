@@ -204,6 +204,7 @@ class P2pSession(object):
         """
         Ends session
         """
+        self.bot.send_presence(ptype='unavailable')
         self.bot.disconnect()
 
     def subscribe(self, targetjid):

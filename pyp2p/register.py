@@ -107,6 +107,7 @@ class RegisterBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             logging.error("No response from server.")
 
+        self.send_presence(ptype='unavailable')
         self.disconnect()
 
     def register(self, iq):

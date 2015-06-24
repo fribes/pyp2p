@@ -63,6 +63,7 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
                               % e.iq['error']['text'])
         except IqTimeout:
             self.logger.error("No response from server.")
+        self.bot.send_presence(ptype='unavailable')
         self.disconnect()
 
 
