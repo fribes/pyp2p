@@ -214,9 +214,9 @@ class PyP2pShell(cmd.Cmd):
         Require an active session
 
         """
-        arg = arg
+        arg = arg.split()
         try:
-            privacy_list = self.session.get_privacy()
+            privacy_list = self.session.get_privacy_list(list_name=arg[0])
             print(privacy_list)
         except AttributeError:
             print("No session active")

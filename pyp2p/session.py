@@ -133,20 +133,22 @@ class SessionBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             self.logger.error("No response from server.")
 
-    def get_privacy_list(self):
+    def get_privacy_list(self, list_name):
         """
         Get privacy list
         """
         iq = self.Iq()
         iq['type'] = 'get'
-        iq['privacy']['list']['name'] = 'default'
+        iq['privacy']['list']['name'] = list_name
         try:
-            iq.send(now=True)
+            resp = iq.send(now=True)
             self.logger.info("Privacy get")
+            return resp
         except IqError as e:
             self.logger.error("Error: %s" % e)
         except IqTimeout:
             self.logger.error("No response from server.")
+
 
     def get_lists(self):
         """
@@ -156,8 +158,9 @@ class SessionBot(sleekxmpp.ClientXMPP):
         iq['type'] = 'get'
         iq.enable('privacy')
         try:
-            iq.send(now=True)
+            resp = iq.send(now=True)
             self.logger.info("Privacy lists get")
+            return resp
         except IqError as e:
             self.logger.error("Error: %s" % e)
         except IqTimeout:
@@ -230,11 +233,11 @@ class P2pSession(object):
                               mbody=msg,
                               mtype='chat')
 
-    def get_privacy(self):
+    def get_privacy_list(self, list_name):
         """
         Retrieve privacy list
         """
-        return self.bot.get_privacy()
+        return self.bot.get_privacy_list(list_name=list_name)
 
     def get_lists(self):
         """
