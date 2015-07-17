@@ -279,7 +279,7 @@ def main():
     if options.debug_level is not None:
         level = int(options.debug_level)
     else:
-        level = logging.CRITICAL
+        level = logging.INFO
 
     basicConfig(level=level, format=FORMAT)
 
