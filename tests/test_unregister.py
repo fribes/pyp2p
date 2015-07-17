@@ -27,7 +27,7 @@ class TestUnregister:
         self.asserting_handler = AssertingHandler(200)
         logging.getLogger().addHandler(self.asserting_handler)
         self.ident = Identifier(domain="iot.legrand.net").get()
-        reg.Register(server_address='p2pserver.cloudapp.net', port='5222').register(self.ident,'titi')
+        reg.Register(server_address='p2pserver.cloudapp.net', port='80').register(self.ident,'titi')
         self.asserting_handler.assert_logged("Account created")
 
 
@@ -35,7 +35,7 @@ class TestUnregister:
         logging.getLogger().removeHandler(self.asserting_handler)
 
     def test_unregister(self):
-        self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='5222')
+        self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='80')
         self.unregister.unregister(self.ident,'titi')
         self.asserting_handler.assert_logged("User removed")
 

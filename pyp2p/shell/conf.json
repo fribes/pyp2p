@@ -1,6 +1,6 @@
 {
     "iot.legrand.net": {
                 "server": "p2pserver.cloudapp.net",
-                "port": "5222"
+                "port": "80"
     }
 }

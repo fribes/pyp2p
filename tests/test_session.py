@@ -38,7 +38,7 @@ class TestSession:
     def setup(self):
         self.ident = Identifier(domain="iot.legrand.net").get()
         self.server = 'p2pserver.cloudapp.net'
-        self.port = '5222'
+        self.port = '80'
         self.password = 'titi'
         self.test_msg = "il n'y a pas de hasard"
         Register(server_address=self.server,
@@ -68,7 +68,7 @@ class TestPrivacy:
         self.alice_ident = Identifier(domain="iot.legrand.net").get()
         self.bob_ident = Identifier(domain="iot.legrand.net").get()
         self.server = 'p2pserver.cloudapp.net'
-        self.port = '5222'
+        self.port = '80'
         self.password = 'titi'
         self.test_msg = "il n'y a pas de hasard"
 
