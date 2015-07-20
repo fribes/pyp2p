@@ -19,13 +19,19 @@ class JSONConfReader(object):
         try:
             with open(conf_filename, 'r') as conf_file:
                 self.conf = json.load(fp=conf_file, encoding='ascii')
-                for domain in self.conf.keys():
-                    self._check_format(self.conf[domain])
+                self._check_format(self.conf)
         except ValueError as error:
             raise PyP2pBadFormat("Could not load JSON data from: %s (%s)"
                                  % (conf_filename, error))
 
     def _check_format(self, conf):
-        if "server" not in conf.keys() or "port" not in conf.keys():
-            raise PyP2pBadFormat("missing 'server' and/or 'port'"
+
+        if "current" not in conf.keys() or "domains" not in conf.keys():
+            raise PyP2pBadFormat("missing 'current' and/or 'domains'"
                                  " JSON keys in: %s" % self.conf_filename)
+        for domain_k, domain_v in conf["domains"].iteritems():
+            if "server" not in domain_v.keys() or "port" not in domain_v.keys():
+                raise PyP2pBadFormat("missing 'server' and/or 'port'"
+                                     " JSON keys in: %s" % self.conf_filename)
+
+

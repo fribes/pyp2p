@@ -1,6 +1,13 @@
 {
-    "iot.legrand.net": {
-                "server": "p2pserver.cloudapp.net",
-                "port": "80"
+    "current": "localhost",
+    "domains": {
+        "localhost": {
+                    "server": "localhost",
+                    "port": "5222"
+        },
+        "iot.legrand.net": {
+                    "server": "p2pserver.cloudapp.net",
+                    "port": "80"
+        }
     }
 }

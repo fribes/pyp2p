@@ -18,8 +18,10 @@ class TestJSONConfReader:
 
     def test_conf_reader(self):
 
-        # read conf from file
+        current = self.conf_reader.conf["current"]
+        assert_equal("iot.legrand.net", current)
+
         assert_equal("p2pserver.cloudapp.net",
-                     self.conf_reader.conf["iot.legrand.net"]["server"])
+                     self.conf_reader.conf["domains"][current]["server"])
         assert_equal("5222",
-                     self.conf_reader.conf["iot.legrand.net"]["port"])
+                     self.conf_reader.conf["domains"][current]["port"])

@@ -59,6 +59,13 @@ class PyP2pShell(cmd.Cmd):
         self.pp = pprint.PrettyPrinter(indent=4)
         self.session = None
 
+    def _get_server_and_port_from_conf(self):
+        """Return a tuple with server and port"""
+
+        current = self.conf["current"]
+        return (self.conf["domains"][current]["server"],
+                self.conf["domains"][current]["port"])
+
     @handle_exception
     def do_clear(self, arg):
         """
@@ -75,9 +82,9 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        reg.Register(server_address=self.conf["iot.legrand.net"]["server"],
-                     port=self.conf["iot.legrand.net"]["port"])\
-           .register(arg[0], arg[1])
+        (server, port) = self._get_server_and_port_from_conf()
+        reg.Register(server_address=server, port=port)\
+                .register(arg[0], arg[1])
 
     @handle_exception
     def do_unregister(self, arg):
@@ -87,9 +94,9 @@ class PyP2pShell(cmd.Cmd):
         arg: JID password
         """
         arg = arg.split()
-        unreg.Unregister(server_address=self.conf["iot.legrand.net"]["server"],
-                         port=self.conf["iot.legrand.net"]["port"])\
-             .unregister(arg[0], arg[1])
+        (server, port) = self._get_server_and_port_from_conf()
+        unreg.Unregister(server_address=server, port=port)\
+                .unregister(arg[0], arg[1])
 
     @handle_exception
     def do_start_session(self, arg):
@@ -103,8 +110,7 @@ class PyP2pShell(cmd.Cmd):
             print("Already in a session. End session first.")
         else:
             arg = arg.split()
-            server = self.conf["iot.legrand.net"]["server"]
-            port = self.conf["iot.legrand.net"]["port"]
+            (server, port) = self._get_server_and_port_from_conf()
             self.session = P2pSession(server_address=server,
                                       port=port)
             self.session.start_session(jid=arg[0], password=arg[1])
