@@ -79,7 +79,7 @@ class PyP2pShell(cmd.Cmd):
         """
         Register on xmpp server
 
-        arg: JID password
+        args: JID password
         """
         arg = arg.split()
         (server, port) = self._get_server_and_port_from_conf()
@@ -91,7 +91,7 @@ class PyP2pShell(cmd.Cmd):
         """
         Unregister from xmpp server
 
-        arg: JID password
+        args: JID password
         """
         arg = arg.split()
         (server, port) = self._get_server_and_port_from_conf()
@@ -104,7 +104,7 @@ class PyP2pShell(cmd.Cmd):
         Start an xmpp session to server defined in conf with JID and password
         passed in argument
 
-        arg: JID password
+        args: JID password
         """
         if self.session is not None:
             print("Already in a session. End session first.")
@@ -135,8 +135,6 @@ class PyP2pShell(cmd.Cmd):
         """
         Display user roster
         Require an active session
-
-        arg: none
         """
         try:
             roster = self.session.get_roster()
