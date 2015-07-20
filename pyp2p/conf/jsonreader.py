@@ -29,7 +29,7 @@ class JSONConfReader(object):
         if "current" not in conf.keys() or "domains" not in conf.keys():
             raise PyP2pBadFormat("missing 'current' and/or 'domains'"
                                  " JSON keys in: %s" % self.conf_filename)
-        for domain_k, domain_v in conf["domains"].iteritems():
+        for domain_k, domain_v in conf["domains"].items():
             if "server" not in domain_v.keys() or "port" not in domain_v.keys():
                 raise PyP2pBadFormat("missing 'server' and/or 'port'"
                                      " JSON keys in: %s" % self.conf_filename)
