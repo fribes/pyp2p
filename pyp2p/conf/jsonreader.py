@@ -33,5 +33,3 @@ class JSONConfReader(object):
             if "server" not in domain_v.keys() or "port" not in domain_v.keys():
                 raise PyP2pBadFormat("missing 'server' and/or 'port'"
                                      " JSON keys in: %s" % self.conf_filename)
-
-
