@@ -26,7 +26,7 @@ class TestUnregister:
     def setup(self):
         self.asserting_handler = AssertingHandler(200)
         logging.getLogger().addHandler(self.asserting_handler)
-        self.ident = Identifier(domain="iot.legrand.net").get()
+        self.ident = Identifier(domain="iot.legrand.net").get_identifier()
         reg.Register(server_address='p2pserver.cloudapp.net', port='80').register(self.ident,'titi')
         self.asserting_handler.assert_logged("Account created")
 

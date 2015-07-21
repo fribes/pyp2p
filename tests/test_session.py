@@ -36,7 +36,7 @@ class AssertingHandler(logging.handlers.BufferingHandler):
 class TestSession:
  
     def setup(self):
-        self.ident = Identifier(domain="iot.legrand.net").get()
+        self.ident = Identifier(domain="iot.legrand.net").get_identifier()
         self.server = 'p2pserver.cloudapp.net'
         self.port = '80'
         self.password = 'titi'
@@ -65,8 +65,8 @@ class TestSession:
 class TestPrivacy:
  
     def setup(self):
-        self.alice_ident = Identifier(domain="iot.legrand.net").get()
-        self.bob_ident = Identifier(domain="iot.legrand.net").get()
+        self.alice_ident = Identifier(domain="iot.legrand.net").get_identifier()
+        self.bob_ident = Identifier(domain="iot.legrand.net").get_identifier()
         self.server = 'p2pserver.cloudapp.net'
         self.port = '80'
         self.password = 'titi'

@@ -5,6 +5,8 @@
 
 import logging
 import uuid
+import random
+import string
 
 
 class Identifier(object):
@@ -14,17 +16,33 @@ class Identifier(object):
 
     """
 
-    def __init__(self, domain, prefix=None):
-        # Setup logging.
+    def __init__(self, domain, prefix=None, pass_length=16):
+        """
+        """
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger("identifier")
 
         if prefix is None:
             self.identifier = "%s@%s" % (str(uuid.uuid4()), domain)
         else:
-            self.identifier = prefix + str(uuid.uuid4().time_low) + "@" + domain
+            mac_int = uuid.getnode()
+            str_mac = "".join("{:02x}".format(mac_int))
+            self.identifier = prefix + str_mac + "@" + domain
 
-    def get(self):
+        generator = random.SystemRandom()
+        alphabet = string.letters[0:52] + string.digits + '#' + '_'
+        self.password = str().join(generator.choice(alphabet)
+                                   for _ in range(pass_length))
+
+    def get_identifier(self):
+        """ return identifier
+        """
 
         self.logger.info("Get identifier.")
         return self.identifier
+
+    def get_password(self):
+        """ return password
+        """
+        self.logger.info("Get password")
+        return self.password

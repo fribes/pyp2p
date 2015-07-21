@@ -25,7 +25,7 @@ class TestRegister:
  
     def setup(self):
         self.register = reg.Register(server_address='p2pserver.cloudapp.net', port='80')
-        self.ident = Identifier(domain="iot.legrand.net").get()
+        self.ident = Identifier(domain="iot.legrand.net").get_identifier()
 
     def teardown(self):
         unreg.Unregister(server_address='p2pserver.cloudapp.net', port='80').unregister(self.ident,'titi')
