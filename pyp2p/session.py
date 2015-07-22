@@ -39,6 +39,13 @@ class SessionBot(sleekxmpp.ClientXMPP):
         self.add_event_handler("failed_auth", self.failed_auth)
         self.add_event_handler("message", self.message)
         self.logger = logger
+        self.msg_cb = None
+
+    def set_msg_callback(self, cb):
+        """
+        Set a callback to be called upon message reception
+        """
+        self.msg_cb = cb
 
     def message(self, msg):
         """
@@ -55,6 +62,8 @@ class SessionBot(sleekxmpp.ClientXMPP):
         if msg['type'] in ('chat', 'normal'):
             from_jid = JID(msg['from']).bare
             self.logger.info("%s:%s" % (from_jid, msg['body']))
+            if self.msg_cb is not None:
+                self.msg_cb(from_jid=from_jid, msg_body=msg['body'])
 
     def failed_auth(self, event):
         """
@@ -170,6 +179,13 @@ class P2pSession(object):
     def __init__(self, server_address, port):
         self.server_address = server_address
         self.port = port
+        self.bot = None
+
+    def set_msg_callback(self, cb):
+        """
+        Set a callback to be called upon message reception
+        """
+        self.bot.set_msg_callback(cb=cb)
 
     def start_session(self, jid, password):
         # Setup logging.

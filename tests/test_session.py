@@ -123,3 +123,37 @@ class TestPrivacy:
         time.sleep(2)  # let the msg be logged    
         asserting_handler.assert_logged(self.alice_ident+":"+self.test_msg)
         logging.getLogger().removeHandler(asserting_handler)
+
+class TestMessageCallback:
+ 
+    def setup(self):
+        self.ident = Identifier(domain="iot.legrand.net").get_identifier()
+        self.server = 'p2pserver.cloudapp.net'
+        self.port = '80'
+        self.password = 'titi'
+        self.test_msg = "il n'y a pas de hasard"
+        Register(server_address=self.server,
+                 port=self.port).register(self.ident,self.password)
+        self.from_jid = None
+        self.msg_body = None
+
+    def teardown(self):
+        Unregister(server_address=self.server,
+                   port=self.port).unregister(self.ident, self.password)
+        
+    def callback(self, from_jid, msg_body):
+        self.from_jid = from_jid
+        self.msg_body = msg_body
+
+    def test_message_callback(self):
+        session = P2pSession(server_address=self.server,
+                             port=self.port)
+        session.start_session(jid=self.ident, password=self.password)
+
+        session.set_msg_callback(cb=self.callback)
+
+        session.session_send(recipient=self.ident, msg=self.test_msg)
+        time.sleep(2)  # let the msg    
+
+        assert self.from_jid == self.ident
+        assert self.msg_body == self.test_msg
