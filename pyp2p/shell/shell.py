@@ -112,8 +112,9 @@ class PyP2pShell(cmd.Cmd):
             arg = arg.split()
             (server, port) = self._get_server_and_port_from_conf()
             self.session = P2pSession(server_address=server,
-                                      port=port)
-            self.session.start_session(jid=arg[0], password=arg[1])
+                                      port=port,
+                                      jid=arg[0], 
+                                      password=arg[1])
             PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
 
     @handle_exception
@@ -122,7 +123,7 @@ class PyP2pShell(cmd.Cmd):
         End an xmpp session
         """
         try:
-            self.session.disconnect()
+            self.session.session_disconnect()
         except AttributeError:
             print("No session active")
 
@@ -137,8 +138,8 @@ class PyP2pShell(cmd.Cmd):
         Require an active session
         """
         try:
-            roster = self.session.get_roster()
-            jid = self.session.get_jid()
+            roster = self.session.get_session_roster()
+            jid = self.session.get_session_jid()
         except AttributeError:
             print("No session active")
 
@@ -306,7 +307,7 @@ def main():
         exit_no = 1
     finally:
         try:
-            shell.session.disconnect()
+            shell.session.session_disconnect()
         except AttributeError:  # session already ended
             pass
         sys.exit(exit_no)

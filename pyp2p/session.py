@@ -175,95 +175,49 @@ class SessionBot(sleekxmpp.ClientXMPP):
             self.logger.error("No response from server.")
 
 
-class P2pSession(object):
-    def __init__(self, server_address, port):
+class P2pSession(SessionBot):
+    def __init__(self, server_address, port, jid, password):
         self.server_address = server_address
         self.port = port
-        self.bot = None
-
-    def set_msg_callback(self, cb):
-        """
-        Set a callback to be called upon message reception
-        """
-        self.bot.set_msg_callback(cb=cb)
-
-    def start_session(self, jid, password):
-        # Setup logging.
         logging.basicConfig(level=logging.DEBUG)
-
         logger = logging.getLogger("p2psession")
 
-        self.jid = jid
-        self.bot = SessionBot(jid, password, logger)
-        self.bot.auto_reconnect = True
-        self.bot.register_plugin('xep_0016')  # Privacy
+        SessionBot.__init__(self, jid=jid, password=password, logger=logger)
+        SessionBot.auto_reconnect = True
+        SessionBot.register_plugin(self, 'xep_0016')  # Privacy
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
-        if self.bot.connect(address=(self.server_address, self.port)):
+        if SessionBot.connect(self, address=(self.server_address, self.port)):
             logger.info("Processing...")
-            self.bot.process(block=False)
-            return True
-        else:
-            return False
+            SessionBot.process(self, block=False)
 
-    def get_jid(self):
+    def get_session_jid(self):
         """
         Return current session bare jid
         """
-        return self.jid
+        return self.boundjid.bare
 
-    def get_roster(self):
-        return self.bot.client_roster
+    def get_session_roster(self):
+        return self.client_roster
 
-    def disconnect(self):
+    def session_disconnect(self):
         """
         Ends session
         """
-        self.bot.send_presence(ptype='unavailable')
-        self.bot.disconnect()
-
-    def subscribe(self, targetjid):
-        """
-        Subscribe to an xmpp account presence
-        """
-        self.bot.subscribe(targetjid=targetjid)
-
-    def unsubscribe(self, targetjid):
-        """
-        Unsubscribe from an xmpp account presence
-        """
-        self.bot.unsubscribe(targetjid=targetjid)
+        SessionBot.send_presence(self, ptype='unavailable')
+        SessionBot.disconnect(self)
 
     def remove(self, targetjid):
         """
         Remove completely an xmpp account from user roster
         """
-        self.bot.del_roster_item(jid=targetjid)
+        SessionBot.del_roster_item(self, jid=targetjid)
 
     def session_send(self, recipient, msg):
         """
         Send a single message to a recipient
         """
-        self.bot.send_message(mto=recipient,
+        SessionBot.send_message(self, mto=recipient,
                               mbody=msg,
                               mtype='chat')
-
-    def get_privacy_list(self, list_name):
-        """
-        Retrieve privacy list
-        """
-        return self.bot.get_privacy_list(list_name=list_name)
-
-    def get_lists(self):
-        """
-        Retrieve privacy list
-        """
-        return self.bot.get_lists()
-
-    def set_privacy(self):
-        """
-        Set privacy to block anything from user that
-        are not in the roster
-        """
-        self.bot.set_privacy()

@@ -50,8 +50,9 @@ class TestSession:
         
     def test_message_to_myself(self):
         session = P2pSession(server_address=self.server,
-                             port=self.port)
-        session.start_session(jid=self.ident, password=self.password)
+                             port=self.port,
+                             jid=self.ident, 
+                             password=self.password)
 
         asserting_handler = AssertingHandler(800)
         logging.getLogger().addHandler(asserting_handler)
@@ -85,13 +86,14 @@ class TestPrivacy:
         
     def test_message_blocked(self):
         alice_session = P2pSession(server_address=self.server,
-                             port=self.port)
-        alice_session.start_session(jid=self.alice_ident, password=self.password)
+                             port=self.port,
+                             jid=self.alice_ident,
+                              password=self.password)
 
         bob_session = P2pSession(server_address=self.server,
-                             port=self.port)
-        bob_session.start_session(jid=self.bob_ident, password=self.password)
-
+                             port=self.port,
+                             jid=self.bob_ident,
+                              password=self.password)
 
         asserting_handler = AssertingHandler(800)
         logging.getLogger().addHandler(asserting_handler)
@@ -104,12 +106,14 @@ class TestPrivacy:
 
     def test_message_passed(self):
         alice_session = P2pSession(server_address=self.server,
-                             port=self.port)
-        alice_session.start_session(jid=self.alice_ident, password=self.password)
+                             port=self.port,
+                             jid=self.alice_ident,
+                              password=self.password)
 
         bob_session = P2pSession(server_address=self.server,
-                             port=self.port)
-        bob_session.start_session(jid=self.bob_ident, password=self.password)
+                             port=self.port,
+                             jid=self.bob_ident,
+                              password=self.password)
 
         # mutual subscription initiated by alice
         alice_session.subscribe(targetjid = self.bob_ident) 
@@ -147,9 +151,10 @@ class TestMessageCallback:
 
     def test_message_callback(self):
         session = P2pSession(server_address=self.server,
-                             port=self.port)
-        session.start_session(jid=self.ident, password=self.password)
-
+                             port=self.port,
+                             jid=self.ident,
+                              password=self.password)
+        
         session.set_msg_callback(cb=self.callback)
 
         session.session_send(recipient=self.ident, msg=self.test_msg)
