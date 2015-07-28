@@ -10,29 +10,6 @@ import logging
 import logging.handlers
 import time
 
-class AssertingHandler(logging.handlers.BufferingHandler):
-
-    def __init__(self,capacity):
-        logging.handlers.BufferingHandler.__init__(self,capacity)
-
-    def assert_logged(self,msg):
-        logs = []
-        for record in self.buffer:
-            s = self.format(record)
-            logs.append(s)
-            if msg in s:
-                return
-        print(logs)
-        assert False
-
-    def assert_not_logged(self,msg):
-        for record in self.buffer:
-            s = self.format(record)
-            if msg in s:
-                assert False
-        return
-        
-
 class TestSession:
  
     def setup(self):
@@ -43,24 +20,30 @@ class TestSession:
         self.test_msg = "il n'y a pas de hasard"
         Register(server_address=self.server,
                  port=self.port).register(self.ident,self.password)
+        self.from_jid = None
+        self.msg_body = None
+
 
     def teardown(self):
         Unregister(server_address=self.server,
                    port=self.port).unregister(self.ident, self.password)
-        
+
+    def callback(self, from_jid, msg_body):
+        self.from_jid = from_jid
+        self.msg_body = msg_body
+
     def test_message_to_myself(self):
         session = P2pSession(server_address=self.server,
                              port=self.port,
                              jid=self.ident, 
                              password=self.password)
 
-        asserting_handler = AssertingHandler(800)
-        logging.getLogger().addHandler(asserting_handler)
+        session.set_msg_callback(cb=self.callback)
 
         session.session_send(recipient=self.ident, msg=self.test_msg)
-        time.sleep(2)  # let the msg    
-        asserting_handler.assert_logged(self.ident+":"+self.test_msg)
-        logging.getLogger().removeHandler(asserting_handler)
+        time.sleep(1)  #  let the message transit    
+        assert self.from_jid == self.ident
+        assert self.msg_body == self.test_msg
 
 
 class TestPrivacy:
@@ -77,14 +60,20 @@ class TestPrivacy:
                      port=self.port)
         reg.register(self.alice_ident,self.password)
         reg.register(self.bob_ident,self.password)
+        self.from_jid = None
+        self.msg_body = None
 
     def teardown(self):
         unreg = Unregister(server_address=self.server,
                          port=self.port)
         unreg.unregister(self.alice_ident, self.password)
         unreg.unregister(self.bob_ident, self.password)
-        
-    def test_message_blocked(self):
+
+    def callback(self, from_jid, msg_body):
+        self.from_jid = from_jid
+        self.msg_body = msg_body
+
+    def test_message_blocked_not_in_roster(self):
         alice_session = P2pSession(server_address=self.server,
                              port=self.port,
                              jid=self.alice_ident,
@@ -95,14 +84,36 @@ class TestPrivacy:
                              jid=self.bob_ident,
                               password=self.password)
 
-        asserting_handler = AssertingHandler(800)
-        logging.getLogger().addHandler(asserting_handler)
+        bob_session.set_msg_callback(cb=self.callback)
 
         alice_session.session_send(recipient=self.bob_ident, msg=self.test_msg)
-        time.sleep(2)  # let the msg    
-        asserting_handler.assert_not_logged(self.alice_ident+":"+self.test_msg)
-        logging.getLogger().removeHandler(asserting_handler)
+        time.sleep(1)  #  let the message transit    
+        assert self.from_jid == None
+        assert self.msg_body == None
 
+
+    def test_message_blocked_bob_reject(self):
+        alice_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.alice_ident,
+                              password=self.password)
+
+        bob_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.bob_ident,
+                              password=self.password)
+
+        alice_session.authorize_subscriptions()
+
+        # mutual subscription initiated by alice
+        alice_session.subscribe(targetjid = self.bob_ident) 
+        bob_session.set_msg_callback(cb=self.callback)
+
+        time.sleep(1) # let subscription process occur
+        alice_session.session_send(recipient=self.bob_ident, msg=self.test_msg)
+        time.sleep(1)  #  let the message transit    
+        assert self.from_jid == None
+        assert self.msg_body == None
 
     def test_message_passed(self):
         alice_session = P2pSession(server_address=self.server,
@@ -115,18 +126,19 @@ class TestPrivacy:
                              jid=self.bob_ident,
                               password=self.password)
 
+        alice_session.authorize_subscriptions()
+        bob_session.authorize_subscriptions()
+
         # mutual subscription initiated by alice
         alice_session.subscribe(targetjid = self.bob_ident) 
 
-        asserting_handler = AssertingHandler(1800)
-        logger = logging.getLogger()
-        logger.addHandler(asserting_handler)
-        logger.setLevel(logging.INFO)
-        time.sleep(2) # let subscription process occur
+        bob_session.set_msg_callback(cb=self.callback)
+
+        time.sleep(1) # let subscription process occur
         alice_session.session_send(recipient=self.bob_ident, msg=self.test_msg)
-        time.sleep(2)  # let the msg be logged    
-        asserting_handler.assert_logged(self.alice_ident+":"+self.test_msg)
-        logging.getLogger().removeHandler(asserting_handler)
+        time.sleep(1)  # let the msg be logged    
+        assert self.from_jid == self.alice_ident
+        assert self.msg_body == self.test_msg
 
 class TestMessageCallback:
  

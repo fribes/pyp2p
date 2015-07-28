@@ -183,7 +183,8 @@ class P2pSession(SessionBot):
         logger = logging.getLogger("p2psession")
 
         SessionBot.__init__(self, jid=jid, password=password, logger=logger)
-        SessionBot.auto_reconnect = True
+        self.auto_reconnect = True
+        self.auto_authorize = False
         SessionBot.register_plugin(self, 'xep_0016')  # Privacy
 
         # Connect to the XMPP server and start processing XMPP stanzas.
@@ -221,3 +222,15 @@ class P2pSession(SessionBot):
         SessionBot.send_message(self, mto=recipient,
                               mbody=msg,
                               mtype='chat')
+
+    def authorize_subscriptions(self):
+        """
+        Set the xmpp bot to automatically autorize authorize_subscriptions
+        """
+        self.auto_authorize = True
+
+    def reject_subscriptions(self):
+        """
+        Set the xmpp bot to automatically reject authorize_subscriptions
+        """
+        self.auto_authorize = False
