@@ -253,6 +253,31 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @handle_exception
+    def do_authorize_sub(self, arg):
+        """
+        Set library to automatically authorize subscriptions
+        Require an active session
+
+        """
+        arg = arg
+        try:
+            self.session.authorize_subscriptions()
+        except AttributeError:
+            print("No session active")
+
+    @handle_exception
+    def do_reject_sub(self, arg):
+        """
+        Set library to automatically reject subscriptions
+        Require an active session
+
+        """
+        arg = arg
+        try:
+            self.session.reject_subscriptions()
+        except AttributeError:
+            print("No session active")
 
 def get_conf_filename(options):
     """

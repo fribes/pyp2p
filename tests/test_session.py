@@ -170,7 +170,79 @@ class TestMessageCallback:
         session.set_msg_callback(cb=self.callback)
 
         session.session_send(recipient=self.ident, msg=self.test_msg)
-        time.sleep(2)  # let the msg    
+        time.sleep(1)  # let the msg transit    
 
         assert self.from_jid == self.ident
         assert self.msg_body == self.test_msg
+
+
+class TestSubscription:
+ 
+    def setup(self):
+        self.alice_ident = Identifier(domain="iot.legrand.net").get_identifier()
+        self.bob_ident = Identifier(domain="iot.legrand.net").get_identifier()
+        self.server = 'p2pserver.cloudapp.net'
+        self.port = '80'
+        self.password = 'titi'
+        self.test_msg = "il n'y a pas de hasard"
+
+        reg = Register(server_address=self.server,
+                     port=self.port)
+        reg.register(self.alice_ident,self.password)
+        reg.register(self.bob_ident,self.password)
+
+    def teardown(self):
+        unreg = Unregister(server_address=self.server,
+                         port=self.port)
+        unreg.unregister(self.alice_ident, self.password)
+        unreg.unregister(self.bob_ident, self.password)
+
+    def test_subscription_rejected_by_default(self):
+        alice_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.alice_ident,
+                              password=self.password)
+
+        bob_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.bob_ident,
+                              password=self.password)
+
+        alice_roster = alice_session.get_session_roster()
+        assert self.bob_ident not in alice_roster.keys()
+
+        bob_session.subscribe(targetjid=self.alice_ident)
+        time.sleep(1)  # let the subscription be processed
+        assert alice_roster[self.bob_ident]['subscription'] == 'none'
+
+        alice_session.authorize_subscriptions()
+        bob_session.subscribe(targetjid=self.alice_ident)
+        time.sleep(1)  # let the subscription be processed
+        assert alice_roster[self.bob_ident]['subscription'] == 'from'
+
+        bob_session.authorize_subscriptions()
+        alice_session.subscribe(targetjid=self.bob_ident)
+        time.sleep(1)  # let the subscription be processed
+        assert alice_roster[self.bob_ident]['subscription'] == 'both'
+
+    def test_subscription_rejected_after_authorized(self):
+        alice_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.alice_ident,
+                              password=self.password)
+
+        bob_session = P2pSession(server_address=self.server,
+                             port=self.port,
+                             jid=self.bob_ident,
+                              password=self.password)
+
+        alice_roster = alice_session.get_session_roster()
+        assert self.bob_ident not in alice_roster.keys()
+
+        alice_session.authorize_subscriptions()
+        alice_session.reject_subscriptions()
+
+        bob_session.subscribe(targetjid=self.alice_ident)
+        time.sleep(1)  # let the subscription be processed
+        assert alice_roster[self.bob_ident]['subscription'] == 'none'
+
