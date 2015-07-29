@@ -186,6 +186,7 @@ class P2pSession(SessionBot):
         self.auto_reconnect = True
         self.auto_authorize = False
         SessionBot.register_plugin(self, 'xep_0016')  # Privacy
+        SessionBot.register_plugin(self, 'xep_0199')  # Ping
 
         # Connect to the XMPP server and start processing XMPP stanzas.
         logger.info("Connecting...")
