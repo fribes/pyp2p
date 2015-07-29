@@ -27,7 +27,7 @@ class Identifier(object):
         else:
             mac_int = uuid.getnode()
             str_mac = "".join("{:02x}".format(mac_int))
-            str_mac = str_mac.zfill(12) # ensure leading zeros for integer not big enough
+            str_mac = str_mac.zfill(12)  # ensure leading zeros for integer not big enough
             self.identifier = prefix + str_mac + "@" + domain
 
         generator = random.SystemRandom()

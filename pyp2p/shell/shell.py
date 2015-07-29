@@ -113,7 +113,7 @@ class PyP2pShell(cmd.Cmd):
             (server, port) = self._get_server_and_port_from_conf()
             self.session = P2pSession(server_address=server,
                                       port=port,
-                                      jid=arg[0], 
+                                      jid=arg[0],
                                       password=arg[1])
             PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
 
@@ -278,6 +278,7 @@ class PyP2pShell(cmd.Cmd):
             self.session.reject_subscriptions()
         except AttributeError:
             print("No session active")
+
 
 def get_conf_filename(options):
     """

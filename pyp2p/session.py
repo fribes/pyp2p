@@ -221,8 +221,8 @@ class P2pSession(SessionBot):
         Send a single message to a recipient
         """
         SessionBot.send_message(self, mto=recipient,
-                              mbody=msg,
-                              mtype='chat')
+                                mbody=msg,
+                                mtype='chat')
 
     def authorize_subscriptions(self):
         """
