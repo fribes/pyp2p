@@ -27,6 +27,11 @@ else:
     raw_input = input
 
 
+def my_verify(expected, raw_cert):
+    return True
+
+sleekxmpp.xmlstream.cert.verify = my_verify
+
 class SessionBot(sleekxmpp.ClientXMPP):
 
     """
