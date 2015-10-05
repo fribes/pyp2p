@@ -185,6 +185,7 @@ class P2pSession(SessionBot):
         SessionBot.__init__(self, jid=jid, password=password, logger=logger)
         self.auto_reconnect = True
         self.auto_authorize = False
+        self.ca_certs = None
         SessionBot.register_plugin(self, 'xep_0016')  # Privacy
         SessionBot.register_plugin(self, 'xep_0199')  # Ping
         self.plugin['xep_0199'].enable_keepalive(interval=45, timeout=5)
