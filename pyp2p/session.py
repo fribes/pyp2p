@@ -30,6 +30,7 @@ else:
 def my_verify(expected, raw_cert):
     return True
 
+# FIXME: skip certificate verification for now !!!
 sleekxmpp.xmlstream.cert.verify = my_verify
 
 class SessionBot(sleekxmpp.ClientXMPP):
