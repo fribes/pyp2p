@@ -11,6 +11,7 @@
 
 import sys
 import logging
+import time
 
 import sleekxmpp
 from sleekxmpp.exceptions import IqError, IqTimeout
@@ -46,6 +47,11 @@ class SessionBot(sleekxmpp.ClientXMPP):
         self.add_event_handler("message", self.message)
         self.logger = logger
         self.msg_cb = None
+        self.ready = False
+
+    def is_ready(self):
+        """ Accessor for ready to send state"""
+        return self.ready
 
     def set_msg_callback(self, cb):
         """
@@ -97,6 +103,7 @@ class SessionBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             self.logger.error('Request timed out')
         self.send_presence()
+        self.ready = True
 
     def subscribe(self, targetjid):
         """
@@ -227,6 +234,11 @@ class P2pSession(SessionBot):
         """
         Send a single message to a recipient
         """
+
+        for count in range(3):
+            if self.is_ready(): break
+            time.sleep(1)
+
         SessionBot.send_message(self, mto=recipient,
                                 mbody=msg,
                                 mtype='chat')
