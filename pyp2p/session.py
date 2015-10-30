@@ -45,6 +45,9 @@ class SessionBot(sleekxmpp.ClientXMPP):
         self.add_event_handler("session_start", self.start, threaded=True)
         self.add_event_handler("failed_auth", self.failed_auth)
         self.add_event_handler("message", self.message)
+        self.add_event_handler("got_online", self.online_buddy)
+        self.add_event_handler("got_offline", self.offline_buddy)
+        self.online_buddys = []
         self.logger = logger
         self.msg_cb = None
         self.ready = False
@@ -58,6 +61,27 @@ class SessionBot(sleekxmpp.ClientXMPP):
         Set a callback to be called upon message reception
         """
         self.msg_cb = cb
+
+    def wait_online(self):
+        """ Waits until we got online
+        """
+        while self.jid not in self.online_buddys:
+            time.sleep(1)
+
+    def online_buddy(self, presence):
+        """ Process presence notifications """
+        jid = JID(presence['from']).bare   
+        self.logger.debug('%s got online' % jid)
+        self.online_buddys.append(jid)
+
+    def offline_buddy(self, presence):
+        """ Process presence notifications """
+        jid = JID(presence['from']).bare 
+        self.logger.debug('%s got offline' % jid)
+        try:
+            self.online_buddys.remove(jid)
+        except ValueError:
+            self.logger.warn('%s was available but unoticed' % jid)
 
     def message(self, msg):
         """
@@ -187,6 +211,18 @@ class SessionBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             self.logger.error("No response from server.")
 
+    def bot_send(self, recipient, msg):
+        """
+        Send message, only if buddy is online 
+        """
+
+        if recipient in self.online_buddys:
+            self.send_message(  mto=recipient,
+                                mbody=msg,
+                                mtype='chat')
+        else:
+            self.logger.info("%s skipped (not online)" % recipient)
+
 
 class P2pSession(SessionBot):
     def __init__(self, server_address, port, jid, password):
@@ -239,10 +275,8 @@ class P2pSession(SessionBot):
             if self.is_ready(): break
             time.sleep(1)
 
-        SessionBot.send_message(self, mto=recipient,
-                                mbody=msg,
-                                mtype='chat')
-
+        SessionBot.bot_send(self, recipient=recipient, msg=msg)
+                                
     def authorize_subscriptions(self):
         """
         Set the xmpp bot to automatically autorize authorize_subscriptions
