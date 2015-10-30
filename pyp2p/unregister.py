@@ -54,18 +54,11 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
                      event does not provide any additional
                      data.
         """
-
+        self.send_presence(ptype='unavailable')
         try:
             self.plugin['xep_0077'].cancel_registration()
-            self.logger.info("Account removed for %s!" % self.boundjid)
-        except IqError as e:
-            self.logger.error("Could not remove account: %s"
-                              % e.iq['error']['text'])
         except IqTimeout:
-            self.logger.error("No response from server.")
-        self.bot.send_presence(ptype='unavailable')
-        self.disconnect()
-
+            pass
 
 class Unregister(object):
 
