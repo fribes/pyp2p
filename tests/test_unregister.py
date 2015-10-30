@@ -7,6 +7,7 @@ from pyp2p.identifier import Identifier
 
 import logging
 import logging.handlers
+import time
 
 class AssertingHandler(logging.handlers.BufferingHandler):
 
@@ -30,12 +31,13 @@ class TestUnregister:
         reg.Register(server_address='p2pserver.cloudapp.net', port='80').register(self.ident,'titi')
         self.asserting_handler.assert_logged("Account created")
 
-
     def teardown(self):
         logging.getLogger().removeHandler(self.asserting_handler)
 
     def test_unregister(self):
+        time.sleep(2)
         self.unregister = unreg.Unregister(server_address='p2pserver.cloudapp.net', port='80')
         self.unregister.unregister(self.ident,'titi')
+        time.sleep(1)
         self.asserting_handler.assert_logged("User removed")
 
