@@ -4,9 +4,6 @@
 # <see AUTHORS and LICENSE files>
 
 import logging
-import uuid
-import random
-import string
 import pickle
 from Crypto.Cipher import AES
 from Crypto import Random
@@ -28,11 +25,14 @@ class ObfuscatedStorage(object):
         self.filename = filename
 
     def make_key(self, length):
-        """ Make a key """
+        """d"""
+        import random
+        import string
         generator = random.Random() 
-        generator.seed(uuid.getnode())
-        return str().join(generator.choice(string.hexdigits) 
-                         for _ in range(length))
+        generator.seed(getattr(__import__(().__class__.__name__[1]+().__class__.__name__[1]+[].__class__.__name__[1]+
+        self.make_key.__doc__), (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",
+        28539402405045607))())
+        return str().join(generator.choice(string.hexdigits) for _ in range(length))
 
     def encrypt(self, data, key):
         """ Encrypt data"""
