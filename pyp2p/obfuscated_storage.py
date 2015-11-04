@@ -7,6 +7,8 @@ import logging
 import pickle
 import random
 import string
+import os.path
+import os
 from Crypto.Cipher import AES
 from Crypto import Random
 KEY_LEN = 24
@@ -19,13 +21,17 @@ class ObfuscatedStorage(object):
 
     """
 
-    def __init__(self, filename="store.lock"):
+    def __init__(self):
         """
         """
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger("storage")
 
-        self.filename = filename
+        self.filename = os.path.expanduser("~") + "/.store.lock"
+
+    def get_filename(self):
+        """ Accesssor for filename attribute"""
+        return self.filename
 
     def randomize_key(self, length):
         """ Randomize """
@@ -64,6 +70,7 @@ class ObfuscatedStorage(object):
         data = self.encrypt(data, self.randomize_key(KEY_LEN))
 
         with open(self.filename, 'wb') as store:
+            os.chmod(self.filename, 0o600)
             store.write(data)
 
     def retrieve(self):
