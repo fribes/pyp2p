@@ -37,7 +37,7 @@ class TestObfuscatedStorage:
         assert data[0] in read_data[0]
         assert data[1] in read_data[1]
 
-class TestMakeKey:
+class TestRandomizeKey:
 
     def setup(self):
         self.filename = "store.lock"
@@ -49,7 +49,7 @@ class TestMakeKey:
 
         storage = ObfuscatedStorage(filename=self.filename)
 
-        key1 = storage.make_key(16)
+        key1 = storage.randomize_key(16)
         for loop_index in range(32):
-            key_n = storage.make_key(16)
+            key_n = storage.randomize_key(16)
             assert key_n == key1

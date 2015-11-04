@@ -5,6 +5,8 @@
 
 import logging
 import pickle
+import random
+import string
 from Crypto.Cipher import AES
 from Crypto import Random
 KEY_LEN = 24
@@ -24,13 +26,11 @@ class ObfuscatedStorage(object):
 
         self.filename = filename
 
-    def make_key(self, length):
-        """d"""
-        import random
-        import string
+    def randomize_key(self, length):
+        """ Randomize """
         generator = random.Random() 
         generator.seed(getattr(__import__(().__class__.__name__[1]+().__class__.__name__[1]+[].__class__.__name__[1]+
-        self.make_key.__doc__), (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",
+        generator.__class__.__name__[3]), (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",
         28539402405045607))())
         return str().join(generator.choice(string.hexdigits) for _ in range(length))
 
@@ -59,7 +59,7 @@ class ObfuscatedStorage(object):
         self.logger.info("Storing data %s" % data)
 
         data = pickle.dumps(data)
-        data = self.encrypt(data, self.make_key(KEY_LEN))
+        data = self.encrypt(data, self.randomize_key(KEY_LEN))
 
         with open(self.filename, 'wb') as store:
             store.write(data) 
@@ -70,7 +70,7 @@ class ObfuscatedStorage(object):
         with open(self.filename, 'rb') as store:
             raw = store.read()
 
-        serialized = self.decrypt(raw, self.make_key(KEY_LEN))
+        serialized = self.decrypt(raw, self.randomize_key(KEY_LEN))
         payload = pickle.loads(serialized)
 
         self.logger.debug("Retreived %s" % payload)
