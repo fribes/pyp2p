@@ -1,5 +1,4 @@
 sleekxmpp
 nose
-sphinx
 pep8
 pycrypto
