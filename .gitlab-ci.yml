@@ -1,12 +1,7 @@
 image: python:2.7
-  # - sleekxmpp
-  # - nose
-  # - sphinx
-  # - pep8
-  # - pycrypto
-
+ 
 before_script:
-  - pip install nose
+  - pip install -r requirements.txt
 
 stages:
   - test
