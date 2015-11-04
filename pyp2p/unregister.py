@@ -60,6 +60,7 @@ class UnRegisterBot(sleekxmpp.ClientXMPP):
         except IqTimeout:
             pass
 
+
 class Unregister(object):
 
     def __init__(self, server_address, port):

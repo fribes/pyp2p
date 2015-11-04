@@ -6,6 +6,7 @@
 import logging
 import pickle
 
+
 class RawStorage(object):
     """
 
@@ -28,7 +29,7 @@ class RawStorage(object):
         self.logger.info("Storing data...")
 
         with open(self.filename, 'wb') as store:
-            pickle.dump(data, store, -1) 
+            pickle.dump(data, store, -1)
 
     def retrieve(self):
         self.logger.info("Retreiving data...")
@@ -37,4 +38,3 @@ class RawStorage(object):
             data = pickle.load(store)
 
         return data
-

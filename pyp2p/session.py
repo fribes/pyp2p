@@ -34,6 +34,7 @@ def my_verify(expected, raw_cert):
 # FIXME: skip certificate verification for now !!!
 sleekxmpp.xmlstream.cert.verify = my_verify
 
+
 class SessionBot(sleekxmpp.ClientXMPP):
 
     """
@@ -70,13 +71,13 @@ class SessionBot(sleekxmpp.ClientXMPP):
 
     def online_buddy(self, presence):
         """ Process presence notifications """
-        jid = JID(presence['from']).bare   
+        jid = JID(presence['from']).bare
         self.logger.debug('%s got online' % jid)
         self.online_buddys.append(jid)
 
     def offline_buddy(self, presence):
         """ Process presence notifications """
-        jid = JID(presence['from']).bare 
+        jid = JID(presence['from']).bare
         self.logger.debug('%s got offline' % jid)
         try:
             self.online_buddys.remove(jid)
@@ -213,13 +214,13 @@ class SessionBot(sleekxmpp.ClientXMPP):
 
     def bot_send(self, recipient, msg):
         """
-        Send message, only if buddy is online 
+        Send message, only if buddy is online
         """
 
         if recipient in self.online_buddys:
-            self.send_message(  mto=recipient,
-                                mbody=msg,
-                                mtype='chat')
+            self.send_message(mto=recipient,
+                              mbody=msg,
+                              mtype='chat')
         else:
             self.logger.info("%s skipped (not online)" % recipient)
 
@@ -272,11 +273,12 @@ class P2pSession(SessionBot):
         """
 
         for count in range(3):
-            if self.is_ready(): break
+            if self.is_ready():
+                break
             time.sleep(1)
 
         SessionBot.bot_send(self, recipient=recipient, msg=msg)
-                                
+
     def authorize_subscriptions(self):
         """
         Set the xmpp bot to automatically autorize authorize_subscriptions

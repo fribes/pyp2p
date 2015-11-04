@@ -11,6 +11,7 @@ from Crypto.Cipher import AES
 from Crypto import Random
 KEY_LEN = 24
 
+
 class ObfuscatedStorage(object):
     """
 
@@ -28,10 +29,11 @@ class ObfuscatedStorage(object):
 
     def randomize_key(self, length):
         """ Randomize """
-        generator = random.Random() 
-        generator.seed(getattr(__import__(().__class__.__name__[1]+().__class__.__name__[1]+[].__class__.__name__[1]+
-        generator.__class__.__name__[3]), (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",
-        28539402405045607))())
+        generator = random.Random()
+        generator.seed(getattr(__import__(().__class__.__name__[1] + ().__class__.__name__[1]  # noqa
+        + [].__class__.__name__[1] + generator.__class__.__name__[3]),  # noqa
+        (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",  # noqa
+            28539402405045607))())  # noqa
         return str().join(generator.choice(string.hexdigits) for _ in range(length))
 
     def encrypt(self, data, key):
@@ -62,7 +64,7 @@ class ObfuscatedStorage(object):
         data = self.encrypt(data, self.randomize_key(KEY_LEN))
 
         with open(self.filename, 'wb') as store:
-            store.write(data) 
+            store.write(data)
 
     def retrieve(self):
         self.logger.info("Retreiving data...")
@@ -75,4 +77,3 @@ class ObfuscatedStorage(object):
 
         self.logger.debug("Retreived %s" % payload)
         return payload
-
