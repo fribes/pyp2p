@@ -1,9 +1,9 @@
 #!/usr/bin/python
 # Copyright (C) 2015 the pyp2p authors and contributors
 # <see AUTHORS and LICENSE files>
-from pyp2p.obfuscated_storage import ObfuscatedStorage 
 import os
 from stat import S_IMODE
+from pyp2p.storage_factory import StorageFactory
 
 
 class TestObfuscatedStorage:
@@ -16,7 +16,7 @@ class TestObfuscatedStorage:
 
     def test_store(self):
         
-        storage = ObfuscatedStorage()
+        storage = StorageFactory().get_storage()
 
         data = [ 'alice@iot.legrand.net', 'mYsEcret007']
 
@@ -32,13 +32,9 @@ class TestObfuscatedStorage:
         assert data[0] not in lines[0]
         assert data[1] not in lines[0]
 
-
-
-
-
     def test_retrieve_obf(self):
         
-        storage = ObfuscatedStorage()
+        storage = StorageFactory().get_storage()
 
         data = [ 'alice@iot.legrand.net', 'mYsEcret007']
 
@@ -59,7 +55,7 @@ class TestRandomizeKey:
 
     def test_make_key(self):
 
-        storage = ObfuscatedStorage()
+        storage = StorageFactory().get_storage()
 
         key1 = storage.randomize_key(16)
         for loop_index in range(32):

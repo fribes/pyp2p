@@ -14,13 +14,17 @@ class RawStorage(object):
 
     """
 
-    def __init__(self, filename="store.lock"):
+    def __init__(self):
         """
         """
         logging.basicConfig(level=logging.DEBUG)
         self.logger = logging.getLogger("storage")
 
-        self.filename = filename
+        self.filename = "store.lock"
+
+    def get_filename(self):
+        """ Accesssor for filename attribute"""
+        return self.filename
 
     def store(self, data):
         """ write data in storage
