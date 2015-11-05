@@ -5,7 +5,6 @@
 
 from pyp2p.storage import RawStorage
 from pyp2p.obfuscated_storage import ObfuscatedStorage
-import logging
 
 CLASS_MAP = {'basic': RawStorage,
              'advanced': ObfuscatedStorage}
@@ -22,8 +21,6 @@ class StorageFactory(object):
                located in user's homedir
         """
         self.kind = kind
-        logging.basicConfig(level=logging.DEBUG)
-        self.logger = logging.getLogger("StorageFactory")
 
     def get_storage(self):
         """ Returns a storage class
