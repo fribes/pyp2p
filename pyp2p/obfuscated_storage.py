@@ -36,10 +36,9 @@ class ObfuscatedStorage(object):
     def randomize_key(self, length):
         """ Randomize """
         generator = random.Random()
-        generator.seed(getattr(__import__(().__class__.__name__[1] + ().__class__.__name__[1]  # noqa
-        + [].__class__.__name__[1] + generator.__class__.__name__[3]),  # noqa
-        (lambda _, __: _(_, __))(lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "",  # noqa
-            28539402405045607))())  # noqa
+        generator.seed(getattr(__import__(().__class__.__name__[1] + ().__class__.__name__[1] +  # noqa
+        [].__class__.__name__[1] + generator.__class__.__name__[3]), (lambda _, __: _(_, __))  # noqa
+        (lambda _, __: chr(__ % 256) + _(_, __ // 256) if __ else "", 28539402405045607))())  # noqa
         return str().join(generator.choice(string.hexdigits) for _ in range(length))
 
     def encrypt(self, data, key):
