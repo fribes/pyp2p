@@ -5,6 +5,7 @@
 
 import logging
 import pickle
+import os
 
 
 class RawStorage(object):
@@ -21,24 +22,38 @@ class RawStorage(object):
         self.logger = logging.getLogger("storage")
 
         self.filename = "store.lock"
+        self.store_hook = None
+        self.retrieve_hook = None
+        self.hooks_extra_args = None
 
     def get_filename(self):
         """ Accesssor for filename attribute"""
         return self.filename
 
+    def retrieve(self):
+        self.logger.info("Retreiving data...")
+
+        with open(self.filename, 'rb') as container:
+            data = container.read()
+
+        if self.retrieve_hook is not None:
+            data = self.retrieve_hook(data, self.hooks_extra_args)
+
+        data = pickle.loads(data)
+
+        return data
+
     def store(self, data):
         """ write data in storage
         """
 
-        self.logger.info("Storing data...")
+        self.logger.info("Storing data %s" % data)
 
-        with open(self.filename, 'wb') as store:
-            pickle.dump(data, store, -1)
+        data = pickle.dumps(data)
 
-    def retrieve(self):
-        self.logger.info("Retreiving data...")
+        if self.store_hook is not None:
+            data = self.store_hook(data, self.hooks_extra_args)
 
-        with open(self.filename, 'rb') as store:
-            data = pickle.load(store)
-
-        return data
+        with open(self.filename, 'wb') as container:
+            os.chmod(self.filename, 0o600)
+            container.write(data)

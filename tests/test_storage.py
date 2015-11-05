@@ -22,8 +22,9 @@ class TestStorage:
 
         with open(storage.get_filename(), 'rb') as store:
             lines = store.readlines()
-        assert data[0] in lines[0]
-        assert data[1] in lines[0]
+
+        assert data[0] in lines[1]
+        assert data[1] in lines[3]
 
     def test_retrieve_raw(self):
         

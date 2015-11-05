@@ -3,18 +3,16 @@
 # Copyright (C) 2015 the pyp2p authors and contributors
 # <see AUTHORS and LICENSE files>
 
-import logging
-import pickle
 import random
 import string
 import os.path
-import os
 from Crypto.Cipher import AES
 from Crypto import Random
+from pyp2p.storage import RawStorage
 KEY_LEN = 24
 
 
-class ObfuscatedStorage(object):
+class ObfuscatedStorage(RawStorage):
     """
 
         Implements a permanent storage that is not human readable
@@ -24,14 +22,11 @@ class ObfuscatedStorage(object):
     def __init__(self):
         """
         """
-        logging.basicConfig(level=logging.DEBUG)
-        self.logger = logging.getLogger("storage")
-
+        super(ObfuscatedStorage, self).__init__()
         self.filename = os.path.expanduser("~") + "/.store.lock"
-
-    def get_filename(self):
-        """ Accesssor for filename attribute"""
-        return self.filename
+        self.store_hook = self.encrypt
+        self.retrieve_hook = self.decrypt
+        self.hooks_extra_args = self.randomize_key(KEY_LEN)
 
     def randomize_key(self, length):
         """ Randomize """
@@ -47,7 +42,6 @@ class ObfuscatedStorage(object):
         cipher = AES.new(key, AES.MODE_CFB, init_vector)
         crypto = init_vector + cipher.encrypt(data)
         self.logger.debug("Encrypting with key %s, init vector:%s" % (key, init_vector))
-
         return crypto
 
     def decrypt(self, data, key):
@@ -58,28 +52,3 @@ class ObfuscatedStorage(object):
         msg = cipher.decrypt(data)
         self.logger.debug("Decrypting with key %s, init vector:%s" % (key, init_vector))
         return msg
-
-    def store(self, data):
-        """ write data in storage
-        """
-
-        self.logger.info("Storing data %s" % data)
-
-        data = pickle.dumps(data)
-        data = self.encrypt(data, self.randomize_key(KEY_LEN))
-
-        with open(self.filename, 'wb') as store:
-            os.chmod(self.filename, 0o600)
-            store.write(data)
-
-    def retrieve(self):
-        self.logger.info("Retreiving data...")
-
-        with open(self.filename, 'rb') as store:
-            raw = store.read()
-
-        serialized = self.decrypt(raw, self.randomize_key(KEY_LEN))
-        payload = pickle.loads(serialized)
-
-        self.logger.debug("Retreived %s" % payload)
-        return payload

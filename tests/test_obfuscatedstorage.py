@@ -29,8 +29,10 @@ class TestObfuscatedStorage:
 
         with open(filename, 'rb') as store:
             lines = store.readlines()
-        assert data[0] not in lines[0]
-        assert data[1] not in lines[0]
+
+        for line in lines:
+            assert data[0] not in line
+            assert data[1] not in line
 
     def test_retrieve_obf(self):
         
