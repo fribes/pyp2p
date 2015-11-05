@@ -1,0 +1,17 @@
+{
+	"folders":
+	[
+		{
+			"path": "."
+		}
+	],
+    "build_systems":
+    [
+        {
+            "name": "python",
+            "cmd": ["make", "pep8"],
+            "selector": "source.python",
+            "working_dir": "${folder}"
+        }
+    ]
+}
