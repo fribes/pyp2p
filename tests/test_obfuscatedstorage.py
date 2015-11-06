@@ -34,11 +34,26 @@ class TestObfuscatedStorage:
             assert data[0] not in line
             assert data[1] not in line
 
-    def test_retrieve(self):
+    def test_retrieve_list(self):
         
         storage = StorageFactory().get_storage()
 
         data = [ 'alice@iot.legrand.net', 'mYsEcret007']
+
+        storage.store(data)
+
+        read_data = storage.retrieve()
+
+        assert len(read_data) == 2
+        assert data[0] in read_data[0]
+        assert data[1] in read_data[1]
+
+
+    def test_retrieve_tuple(self):
+
+        storage = StorageFactory().get_storage()
+
+        data = ('alice@iot.legrand.net', 'mYsEcret007')
 
         storage.store(data)
 

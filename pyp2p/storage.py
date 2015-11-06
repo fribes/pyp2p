@@ -47,7 +47,7 @@ class RawStorage(object):
         """ write data in storage
         """
 
-        self.logger.info("Storing data %s" % data)
+        self.logger.info("Storing data %s" % str(data))
 
         data = pickle.dumps(data)
 
