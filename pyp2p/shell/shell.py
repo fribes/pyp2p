@@ -35,9 +35,31 @@ def handle_exception(func):
         try:
             return func(*args, **kwargs)
         except PyP2pException as error:
-            print("Error: %s" % error.msg)
+            print("P2P error: %s" % error.msg)
+        except Exception as error:
+            print("Unexpected error: %s" % error)
     inner.__doc__ = func.__doc__
     return inner
+
+
+class expected_args():
+    def __init__(func, arg_count):
+        self.func = func
+        self.arg_count = arg_count
+    
+
+    def __call__(self, f):
+        """
+        If there are decorator arguments, __call__() is only called
+        once, as part of the decoration process! You can only give
+        it a single argument, which is the function object.
+        """
+        def wrapped_f(*args):
+            if len(arg.split()) == self.arg_count:
+                return f(*args)
+            else:
+                print("syntax error: expected %s args" % self.arg_count)
+        return wrapped_f
 
 
 class PyP2pShell(cmd.Cmd):
