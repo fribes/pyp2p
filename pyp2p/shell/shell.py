@@ -42,23 +42,23 @@ def handle_exception(func):
     return inner
 
 
-class expected_args():
-    def __init__(func, arg_count):
-        self.func = func
+class expected_args(object):
+    def __init__(self, arg_count):
         self.arg_count = arg_count
-    
 
-    def __call__(self, f):
+    def __call__(self, func):
         """
         If there are decorator arguments, __call__() is only called
         once, as part of the decoration process! You can only give
         it a single argument, which is the function object.
         """
         def wrapped_f(*args):
-            if len(arg.split()) == self.arg_count:
-                return f(*args)
+            if len(args[1].split()) == self.arg_count:
+                return func(*args)
             else:
-                print("syntax error: expected %s args" % self.arg_count)
+                print("*** Syntax error: expected %s args" % self.arg_count)
+                print(func.__doc__)
+        wrapped_f.__doc__ = func.__doc__
         return wrapped_f
 
 
@@ -88,6 +88,7 @@ class PyP2pShell(cmd.Cmd):
         return (self.conf["domains"][current]["server"],
                 self.conf["domains"][current]["port"])
 
+    @expected_args(0)
     @handle_exception
     def do_clear(self, arg):
         """
@@ -96,10 +97,11 @@ class PyP2pShell(cmd.Cmd):
         arg = arg
         os.system('clear')
 
+    @expected_args(2)
     @handle_exception
     def do_register(self, arg):
         """
-        Register on xmpp server
+        Register on xmpp server (create an xmpp account)
 
         args: JID password
         """
@@ -108,6 +110,7 @@ class PyP2pShell(cmd.Cmd):
         reg.Register(server_address=server, port=port)\
                 .register(arg[0], arg[1])
 
+    @expected_args(2)
     @handle_exception
     def do_unregister(self, arg):
         """
@@ -120,6 +123,7 @@ class PyP2pShell(cmd.Cmd):
         unreg.Unregister(server_address=server, port=port)\
                 .unregister(arg[0], arg[1])
 
+    @expected_args(2)
     @handle_exception
     def do_start_session(self, arg):
         """
@@ -139,6 +143,7 @@ class PyP2pShell(cmd.Cmd):
                                       password=arg[1])
             PyP2pShell.prompt = '(pyp2p) %s>' % arg[0]
 
+    @expected_args(0)
     @handle_exception
     def do_end_session(self, arg):
         """
@@ -153,6 +158,7 @@ class PyP2pShell(cmd.Cmd):
         self.session = None
         PyP2pShell.prompt = '(pyp2p) '
 
+    @expected_args(0)
     @handle_exception
     def do_show_roster(self, arg):
         """
@@ -178,6 +184,7 @@ class PyP2pShell(cmd.Cmd):
                 else:
                     print(' %s [%s]' % (jid, sub))
 
+    @expected_args(1)
     @handle_exception
     def do_subscribe(self, arg):
         """
@@ -192,6 +199,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(1)
     @handle_exception
     def do_unsubscribe(self, arg):
         """
@@ -206,6 +214,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(1)
     @handle_exception
     def do_remove(self, arg):
         """
@@ -220,6 +229,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(2)
     @handle_exception
     def do_send(self, arg):
         """
@@ -234,11 +244,14 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(1)
     @handle_exception
     def do_get_privacy(self, arg):
         """
         Display privacy list
         Require an active session
+
+        arg: listname
 
         """
         arg = arg.split()
@@ -248,6 +261,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(0)
     @handle_exception
     def do_set_privacy(self, arg):
         """
@@ -261,6 +275,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(0)
     @handle_exception
     def do_get_lists(self, arg):
         """
@@ -275,6 +290,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(0)
     @handle_exception
     def do_authorize_sub(self, arg):
         """
@@ -288,6 +304,7 @@ class PyP2pShell(cmd.Cmd):
         except AttributeError:
             print("No session active")
 
+    @expected_args(0)
     @handle_exception
     def do_reject_sub(self, arg):
         """
